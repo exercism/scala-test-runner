@@ -23,7 +23,6 @@ object Application extends App {
 
   def toExercismJSON(filepath: URL, logFilePath: URL): JSONObject = {
     val baseObject = new JSONObject().put("version", 2)
-    val logFilePath = new URL("<logfile>")
     val errorMessage = findErrorsInLog(logFilePath)
     if(!errorMessage.isEmpty) {
       baseObject
@@ -32,10 +31,12 @@ object Application extends App {
     } else {
       val testSuite = getTestSuiteObject(filepath)
       val failuresNum = testSuite.getInt("failures")
+      // println(failuresNum)
       val testCasesArray = testSuite.getJSONArray("testcase")
-      val testCases = (0 until testCasesArray.length).map(idx => {
+      val testCases: Array[JSONObject] = (0 until testCasesArray.length).toArray.map(idx => {
         val o = testCasesArray.getJSONObject(idx)
         val fail = o.optJSONObject("failure")
+        if(fail != null) println(fail.getString("message"))
         new JSONObject()
         .put("name", o.getString("name"))
         .put("status", if(fail != null) "fail" else "pass" )
