@@ -1,0 +1,17 @@
+[info] Loading project definition from /Users/pro/Exercism/scala/grade-school/project
+[info] Loading settings for project grade-school from build.sbt ...
+[info] Set current project to grade-school (in build file:/Users/pro/Exercism/scala/grade-school/)
+[info] GradeSchoolTest:
+[info] - empty school (16 milliseconds)
+[info] - add student (1 millisecond)
+[info] - add more students in same class (1 millisecond)
+[info] - add students to different grades (0 milliseconds)
+[info] - get students in a grade (1 millisecond)
+[info] - get students in a non-existent grade (0 milliseconds)
+[info] - sort school (3 milliseconds)
+[info] Run completed in 310 milliseconds.
+[info] Total number of tests run: 7
+[info] Suites: completed 1, aborted 0
+[info] Tests: succeeded 7, failed 0, canceled 0, ignored 0, pending 0
+[info] All tests passed.
+[success] Total time: 2 s, completed Feb 21, 2021, 2:36:13 PM
