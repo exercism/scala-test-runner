@@ -4,11 +4,11 @@ import org.scalatest.matchers.should.Matchers
 import scala.io.Source
 import org.json.JSONObject
 
-class ApplicationSpec extends AnyFlatSpec with Matchers { //extends AnyFlatSpec with Matchers {
+class ApplicationSpec extends AnyFlatSpec with Matchers {
 
   "A successful xml" should "pass simply" in {
     val xmlTestURL = getClass.getResource("/GradeSchool_successful.xml")
-    val jsonArray = Application.convertToJSON(xmlTestURL)
+    val jsonArray = Application.getTestCasesJSON(xmlTestURL)
     val objects = (0 until jsonArray.length).map( jsonArray.getJSONObject(_).optJSONObject("failure") )
     objects should contain only (null)
   }
@@ -25,7 +25,7 @@ class ApplicationSpec extends AnyFlatSpec with Matchers { //extends AnyFlatSpec 
 
   "A failing xml" should "contain a failure object" in {
     val xmlTestURL = getClass.getResource("/GradeSchool_failure.xml")
-    val jsonArray = Application.convertToJSON(xmlTestURL)
+    val jsonArray = Application.getTestCasesJSON(xmlTestURL)
     val objects = (0 until jsonArray.length).map( jsonArray.getJSONObject(_).optJSONObject("failure") )
     objects.filter( _ !== null ).length > 0 // how to write this idiomatically?
   }
@@ -38,11 +38,18 @@ class ApplicationSpec extends AnyFlatSpec with Matchers { //extends AnyFlatSpec 
     assert(exercismOutput.getString("status") == "fail")
     assert(exercismOutput.getString("message") == "")
 
-    val testCases = exercismOutput.get("tests").asInstanceOf[Array[JSONObject]]
+    val testCases: Array[JSONObject] = exercismOutput.get("tests").asInstanceOf[Array[JSONObject]]
     assert(testCases.length == 7)
     val failedTest = testCases(2)
     assert(failedTest.getString("status") == "fail")
     assert(failedTest.getString("message") == """TreeMap(2 -> List("James", "Blair2", "Paul")) was not equal to Map(2 -> List("James", "Blair", "Paul"))""")
+  }
+
+  "An xml with a syntax error" should "be properly reported as JSON" in {
+    val outputFileURL = getClass.getResource("/outputs/output_error.txt")
+    val exercismOutput: JSONObject = Application.toExercismJSON(null, outputFileURL)
+    assert(exercismOutput.getInt("version") == 2)
+    assert(exercismOutput.getString("status") == "error")
   }
 
 }
