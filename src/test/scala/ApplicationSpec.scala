@@ -71,4 +71,11 @@ class ApplicationSpec extends AnyFlatSpec with Matchers {
     assert(exercismOutput.getString("status") == "error")
   }
 
+  "An xml with a syntax error" should "be properly reported as JSON" in {
+    val outputFileURL = getClass.getResource("/outputs/output_error.txt")
+    val exercismOutput: JSONObject = Application.toExercismJSON(null, outputFileURL)
+    assert(exercismOutput.getInt("version") == 2)
+    assert(exercismOutput.getString("status") == "error")
+  }
+
 }
