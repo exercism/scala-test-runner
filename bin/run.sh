@@ -14,9 +14,9 @@ fi
 echo remove pending annotations
 for f in $solution_path/src/test/scala/*.scala
 do
-  sed -i '/pending/d' $f
-  sed -i 's/import org.scalatest.{Matchers, FunSuite}/import org.scalatest.{Matchers, FunSuite, CancelAfterFailure}/' $f
-  sed -i 's/FunSuite with Matchers/FunSuite with CancelAfterFailure with Matchers/' $f
+  sed -i -e '/pending/d' $f
+  sed -i -e 's/import org.scalatest.{Matchers, FunSuite}/import org.scalatest.{Matchers, FunSuite, CancelAfterFailure}/' $f
+  sed -i -e 's/FunSuite with Matchers/FunSuite with CancelAfterFailure with Matchers/' $f
 done
 
 echo running tests

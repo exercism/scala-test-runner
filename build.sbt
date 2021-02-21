@@ -2,13 +2,12 @@ import Dependencies._
 
 ThisBuild / scalaVersion     := "2.13.4"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
-ThisBuild / organization     := "com.example"
-ThisBuild / organizationName := "example"
+ThisBuild / organization     := "org.exercism"
+ThisBuild / organizationName := "exercism"
 
 lazy val root = (project in file("."))
   .settings(
     name := "TestRunner",
-    libraryDependencies += scalaTest % Test
+    libraryDependencies += scalaTest % Test,
+    libraryDependencies += "org.json" % "json" % "20201115"
   )
-
-// See https://www.scala-sbt.org/1.x/docs/Using-Sonatype.html for instructions on how to publish to Sonatype.
