@@ -41,14 +41,14 @@ object Application extends App {
         new JSONObject()
         .put("name", o.getString("name"))
         .put("status", if(fail != null) "fail" else "pass" )
-        .putOpt("message", if(fail != null) fail.getString("message") else None)
+        .put("message", if(fail != null) fail.getString("message") else JSONObject.NULL)
         .put("output", "TOIMPLEMENT")
         .put("test_code", "TOIMPLEMENT")
       })
 
       baseObject
       .put("status", if(failuresNum > 0) "fail" else "pass")
-      .putOpt("message", None)
+      .put("message", JSONObject.NULL)
       .put("tests", testCases)
     }
   }
