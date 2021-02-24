@@ -34,8 +34,7 @@ object Application extends App {
       val testSuite = getTestSuiteObject(filepath)
       val failuresNum = testSuite.getInt("failures")
       val testCasesArray = testSuite.getJSONArray("testcase")
-      // val fileSource = Source.fromURL(logFilePath)
-      Console.err.println("asdasd")
+
       val testCases: Array[JSONObject] = (0 until testCasesArray.length).toArray.map(idx => {
         val o = testCasesArray.getJSONObject(idx)
         val fail = o.optJSONObject("failure")
