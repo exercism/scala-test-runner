@@ -34,22 +34,21 @@ object Application extends App {
       val testSuite = getTestSuiteObject(filepath)
       val failuresNum = testSuite.getInt("failures")
       val testCasesArray = testSuite.getJSONArray("testcase")
-      // val fileSource = Source.fromURL(logFilePath)
-      Console.err.println("asdasd")
+
       val testCases: Array[JSONObject] = (0 until testCasesArray.length).toArray.map(idx => {
         val o = testCasesArray.getJSONObject(idx)
         val fail = o.optJSONObject("failure")
         new JSONObject()
         .put("name", o.getString("name"))
         .put("status", if(fail != null) "fail" else "pass" )
-        .put("message", if(fail != null) fail.getString("message") else "")
+        .putOpt("message", if(fail != null) fail.getString("message") else None)
         .put("output", "TOIMPLEMENT")
         .put("test_code", "TOIMPLEMENT")
       })
 
       baseObject
       .put("status", if(failuresNum > 0) "fail" else "pass")
-      .put("message", "")
+      .putOpt("message", None)
       .put("tests", testCases)
     }
   }
