@@ -6,3 +6,15 @@ tmp
 target/
 bin/configlet
 bin/configlet.exe
+
+# SBT-specific
+# https://github.com/github/gitignore/blob/master/Global/SBT.gitignore
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+.history
+.cache
+.lib/

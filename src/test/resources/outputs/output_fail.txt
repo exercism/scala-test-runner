@@ -1,0 +1,23 @@
+[info] Loading project definition from /Users/pro/Exercism/scala/grade-school/project
+[info] Loading settings for project grade-school from build.sbt ...
+[info] Set current project to grade-school (in build file:/Users/pro/Exercism/scala/grade-school/)
+[info] Compiling 1 Scala source to /Users/pro/Exercism/scala/grade-school/target/scala-2.13/test-classes ...
+[info] Done compiling.
+[info] GradeSchoolTest:
+[info] - empty school (16 milliseconds)
+[info] - add student (0 milliseconds)
+[info] - add more students in same class *** FAILED *** (9 milliseconds)
+[info]   TreeMap(2 -> List("James", "Blair2", "Paul")) was not equal to Map(2 -> List("James", "Blair", "Paul")) (GradeSchoolTest.scala:22)
+[info] - add students to different grades (0 milliseconds)
+[info] - get students in a grade (1 millisecond)
+[info] - get students in a non-existent grade (0 milliseconds)
+[info] - sort school (2 milliseconds)
+[info] Run completed in 263 milliseconds.
+[info] Total number of tests run: 7
+[info] Suites: completed 1, aborted 0
+[info] Tests: succeeded 6, failed 1, canceled 0, ignored 0, pending 0
+[info] *** 1 TEST FAILED ***
+[error] Failed tests:
+[error] 	GradeSchoolTest
+[error] (Test / test) sbt.TestsFailedException: Tests unsuccessful
+[error] Total time: 5 s, completed Feb 21, 2021, 2:36:37 PM
