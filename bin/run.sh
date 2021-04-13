@@ -1,33 +1,57 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-slug="$1"
-solution_path="$2"
+# Synopsis:
+# Run the test runner on a solution.
 
-echo "slug:          $slug"
-echo "solution path: $solution_path"
+# Arguments:
+# $1: exercise slug
+# $2: absolute path to solution folder
+# $3: absolute path to output directory
 
-if [ -z "$slug" ] || [ -z "$solution_path" ]; then
-    echo "slug and solution path must be present"
+# Output:
+# Writes the test results to a results.json file in the passed-in output directory.
+# The test results are formatted according to the specifications at https://github.com/exercism/docs/blob/main/building/tooling/test-runners/interface.md
+
+# Example:
+# ./bin/run.sh two-fer /absolute/path/to/two-fer/solution/folder/ /absolute/path/to/output/directory/
+
+# If any required arguments is missing, print the usage and exit
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]; then
+    echo "usage: ./bin/run.sh exercise-slug /absolute/path/to/two-fer/solution/folder/ /absolute/path/to/output/directory/"
     exit 1
 fi
 
-echo remove pending annotations
-for f in $solution_path/src/test/scala/*.scala
-do
-  sed -i -e '/pending/d' $f
-  sed -i -e 's/import org.scalatest.{Matchers, FunSuite}/import org.scalatest.{Matchers, FunSuite, CancelAfterFailure}/' $f
-  sed -i -e 's/FunSuite with Matchers/FunSuite with CancelAfterFailure with Matchers/' $f
-done
+slug="$1"
+input_dir="${2%/}"
+output_dir="${3%/}"
+exercise=$(echo "${slug}" | sed -E 's/(^|-)([a-z])/\U\2/g')
+tests_file="${input_dir}/src/test/scala/${exercise}Test.scala"
+tests_results_file="${input_dir}/target/test-reports/TEST-${exercise}Test.xml"
+original_tests_file="${input_dir}/src/test/scala/${exercise}Test.scala.original"
+results_file="${output_dir}/results.json"
+build_log_file="${output_dir}/build.log"
 
-echo running tests
-cd $solution_path
+# Create the output directory if it doesn't exist
+mkdir -p "${output_dir}"
 
+echo "${slug}: testing..."
 
-host=$(hostname)
-echo 127.0.0.1 $host > /etc/hosts
+pushd "${input_dir}" > /dev/null
 
-sbt -Dsbt.ivy.home=/opt/scala-test-runner/.ivy2 -Divy.home=/opt/scala-test-runner/.ivy2 -Dsbt.global.base=/opt/scala-test-runner/.sbt/1.0 -Dsbt.boot.directory=/opt/scala-test-runner/.sbt/boot test
+cp "${tests_file}" "${original_tests_file}"
 
-# Uncomment below if wanting to grab dependencies for building new release of test runner
-#cp -r /opt/scala-test-runner/.ivy2 .
-#cp -r /opt/scala-test-runner/.sbt .
+# Enable all pending tests
+sed -i 's/pending//g' "${tests_file}"
+
+# TODO: figure out how to 
+sbt test > "${build_log_file}"
+# sbt -Dsbt.ivy.home=/opt/test-runner/.ivy2 -Divy.home=/opt/test-runner/.ivy2 -Dsbt.global.base=/opt/test-runner/.sbt/1.0 -Dsbt.boot.directory=/opt/test-runner/.sbt/boot test
+
+mv -f "${original_tests_file}" "${tests_file}"
+
+popd > /dev/null
+
+# Write the results.json file
+sbt "run ${build_log_file} ${tests_results_file} ${results_file}"
+
+echo "${slug}: done"

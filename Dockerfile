@@ -1,17 +1,18 @@
-# FROM gradle:jdk-alpine
-
-### Taken from: https://github.com/mozilla/docker-sbt
-
 FROM mozilla/sbt:8u232_1.4.5
 
-USER root
+RUN apt-get update && \
+    apt-get install -y jq && \
+    apt-get purge --auto-remove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN mkdir -p /opt/scala-test-runner
-RUN mkdir -p /opt/scala-test-runner/lib
+WORKDIR /opt/test-runner
 
-COPY bin/run.sh /opt/scala-test-runner/bin/
+COPY project/ project/
+COPY src/ src/
+COPY build.sbt build.sbt
 RUN sbt compile -Dsbt.rootdir=true;
 
-WORKDIR /opt/scala-test-runner
+COPY . .
 
-ENTRYPOINT ["/opt/scala-test-runner/bin/run.sh"]
+ENTRYPOINT ["/opt/test-runner/bin/run.sh"]
