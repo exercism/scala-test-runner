@@ -3,6 +3,13 @@ import org.json.{XML, JSONObject, JSONArray}
 import java.net.URL
 
 object Application extends App {
+  require(args.length == 3, "Invalid number of arguments. Expected: <slug> <input-dir> <output-dir>")
+
+  val slug = args(0)
+  val inputDirectory = args(1)
+  val outputDirectory = args(2)
+
+  println(s"Slug: ${slug}, input dir: ${inputDirectory}, output dir: ${outputDirectory}")
 
   def getTestSuiteObject(filepath: URL): JSONObject = {
     val bufferedSource = Source.fromURL(filepath)
