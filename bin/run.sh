@@ -30,6 +30,7 @@ tests_results_file="${input_dir}/target/test-reports/TEST-${exercise}Test.xml"
 original_tests_file="${input_dir}/src/test/scala/${exercise}Test.scala.original"
 results_file="${output_dir}/results.json"
 build_log_file="${output_dir}/build.log"
+runner_log_file="${output_dir}/runner.log"
 
 # Create the output directory if it doesn't exist
 mkdir -p "${output_dir}"
@@ -43,15 +44,13 @@ cp "${tests_file}" "${original_tests_file}"
 # Enable all pending tests
 sed -i 's/pending//g' "${tests_file}"
 
-# TODO: figure out how to 
-sbt test > "${build_log_file}"
-# sbt -Dsbt.ivy.home=/opt/test-runner/.ivy2 -Divy.home=/opt/test-runner/.ivy2 -Dsbt.global.base=/opt/test-runner/.sbt/1.0 -Dsbt.boot.directory=/opt/test-runner/.sbt/boot test
+sbt "set offline := true" test > "${build_log_file}"
 
 mv -f "${original_tests_file}" "${tests_file}"
 
 popd > /dev/null
 
 # Write the results.json file
-sbt "run ${build_log_file} ${tests_results_file} ${results_file}"
+sbt "set offline := true" "run ${build_log_file} ${tests_results_file} ${results_file}" > "${runner_log_file}"
 
 echo "${slug}: done"

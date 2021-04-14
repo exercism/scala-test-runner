@@ -34,8 +34,8 @@ docker build --rm -t exercism/test-runner .
 
 # Run the Docker image using the settings mimicking the production environment
 # TODO: --read-only
-# TODO: --network none
 docker run \
+    --network none \
     --mount type=bind,src="${input_dir}",dst=/solution \
     --mount type=bind,src="${output_dir}",dst=/output \
     --mount type=tmpfs,dst=/tmp \
