@@ -46,6 +46,9 @@ sed -i 's/pending//g' "${tests_file}"
 
 sbt "set offline := true" test > "${build_log_file}"
 
+# Sanitize the output
+sed -i -E '/^\[info\]/d' "${build_log_file}"
+
 mv -f "${original_tests_file}" "${tests_file}"
 
 popd > /dev/null

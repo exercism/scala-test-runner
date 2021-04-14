@@ -25,6 +25,7 @@ for test_dir in tests/*; do
     # Normalize the results file
     sed -i -E \
       -e 's/Finished in [0-9]+\.[0-9]+ seconds//g' \
+      -e 's/Total time:.*(AM|PM)//g' \
       -e "s~${test_dir_path}~/solution~g" \
       "${results_file_path}"
 
