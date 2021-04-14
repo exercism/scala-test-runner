@@ -40,6 +40,16 @@
           rawContent.contains("[error] (Test / compileIncremental) Compilation failed")) rawContent else ""
     }
 
+    def toTestCaseJSON(testCase: JSONObject): JSONObject = {
+      val fail = testCase.optJSONObject("failure")
+      new JSONObject()
+      .put("name", testCase.getString("name"))
+      .put("status", if(fail != null) "fail" else "pass" )
+      .put("message", if(fail != null) fail.getString("message") else JSONObject.NULL)
+      .put("output", JSONObject.NULL)
+      .put("test_code", JSONObject.NULL)
+    }
+
     def toExercismJSON(buildLogFilePath: String, testResultsFilePath: String): JSONObject = {
       val baseObject = new JSONObject().put("version", 2)
       val errorMessage = findErrorsInLog(buildLogFilePath)
@@ -50,18 +60,11 @@
       } else {
         val testSuite = getTestSuiteObject(testResultsFilePath)
         val failuresNum = testSuite.getInt("failures")
-        val testCasesArray = testSuite.getJSONArray("testcase")
-
-        val testCases: Array[JSONObject] = (0 until testCasesArray.length).toArray.map(idx => {
-          val o = testCasesArray.getJSONObject(idx)
-          val fail = o.optJSONObject("failure")
-          new JSONObject()
-          .put("name", o.getString("name"))
-          .put("status", if(fail != null) "fail" else "pass" )
-          .put("message", if(fail != null) fail.getString("message") else JSONObject.NULL)
-          .put("output", JSONObject.NULL)
-          .put("test_code", JSONObject.NULL)
-        })
+        val testcase = testSuite.get("testcase")
+        val testCases: Array[JSONObject] = testcase match {
+          case arr: JSONArray => (0 until arr.length).map(idx => toTestCaseJSON(arr.getJSONObject(idx))).toArray
+          case obj: JSONObject => Array(toTestCaseJSON(obj))
+        }
 
         baseObject
         .put("status", if(failuresNum > 0) "fail" else "pass")
