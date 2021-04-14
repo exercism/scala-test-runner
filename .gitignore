@@ -4,3 +4,4 @@ target/
 tests/**/results.json
 tests/**/build.log
 tests/**/runner.log
+tests/**/*.original
