@@ -59,8 +59,8 @@
           .put("name", o.getString("name"))
           .put("status", if(fail != null) "fail" else "pass" )
           .put("message", if(fail != null) fail.getString("message") else JSONObject.NULL)
-          .put("output", "TOIMPLEMENT")
-          .put("test_code", "TOIMPLEMENT")
+          .put("output", JSONObject.NULL)
+          .put("test_code", JSONObject.NULL)
         })
 
         baseObject
