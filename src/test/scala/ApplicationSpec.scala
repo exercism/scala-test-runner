@@ -26,13 +26,13 @@ class ApplicationSpec extends AnyFlatSpec with Matchers {
 
     val testCases = exercismOutput.get("tests").asInstanceOf[Array[JSONObject]]
     assert(testCases.length == 7)
-    assert(testCases(0).toString() == """{"output":"TOIMPLEMENT","name":"empty school","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
-    assert(testCases(1).toString() == """{"output":"TOIMPLEMENT","name":"add student","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
-    assert(testCases(2).toString() == """{"output":"TOIMPLEMENT","name":"add more students in same class","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
-    assert(testCases(3).toString() == """{"output":"TOIMPLEMENT","name":"add students to different grades","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
-    assert(testCases(4).toString() == """{"output":"TOIMPLEMENT","name":"get students in a grade","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
-    assert(testCases(5).toString() == """{"output":"TOIMPLEMENT","name":"get students in a non-existent grade","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
-    assert(testCases(6).toString() == """{"output":"TOIMPLEMENT","name":"sort school","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
+    assert(testCases(0).toString() == """{"output":null,"name":"empty school","test_code":null,"message":null,"status":"pass"}""")
+    assert(testCases(1).toString() == """{"output":null,"name":"add student","test_code":null,"message":null,"status":"pass"}""")
+    assert(testCases(2).toString() == """{"output":null,"name":"add more students in same class","test_code":null,"message":null,"status":"pass"}""")
+    assert(testCases(3).toString() == """{"output":null,"name":"add students to different grades","test_code":null,"message":null,"status":"pass"}""")
+    assert(testCases(4).toString() == """{"output":null,"name":"get students in a grade","test_code":null,"message":null,"status":"pass"}""")
+    assert(testCases(5).toString() == """{"output":null,"name":"get students in a non-existent grade","test_code":null,"message":null,"status":"pass"}""")
+    assert(testCases(6).toString() == """{"output":null,"name":"sort school","test_code":null,"message":null,"status":"pass"}""")
   }
 
   "A failing xml" should "contain a failure object" in {
@@ -52,17 +52,17 @@ class ApplicationSpec extends AnyFlatSpec with Matchers {
 
     val testCases: Array[JSONObject] = exercismOutput.get("tests").asInstanceOf[Array[JSONObject]]
     assert(testCases.length == 7)
-    assert(testCases(0).toString() == """{"output":"TOIMPLEMENT","name":"empty school","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
-    assert(testCases(1).toString() == """{"output":"TOIMPLEMENT","name":"add student","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
+    assert(testCases(0).toString() == """{"output":null,"name":"empty school","test_code":null,"message":null,"status":"pass"}""")
+    assert(testCases(1).toString() == """{"output":null,"name":"add student","test_code":null,"message":null,"status":"pass"}""")
 
     val failedTest = testCases(2)
     assert(failedTest.getString("status") == "fail")
     assert(failedTest.getString("message") == """TreeMap(2 -> List("James", "Blair2", "Paul")) was not equal to Map(2 -> List("James", "Blair", "Paul"))""")
 
-    assert(testCases(3).toString() == """{"output":"TOIMPLEMENT","name":"add students to different grades","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
-    assert(testCases(4).toString() == """{"output":"TOIMPLEMENT","name":"get students in a grade","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
-    assert(testCases(5).toString() == """{"output":"TOIMPLEMENT","name":"get students in a non-existent grade","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
-    assert(testCases(6).toString() == """{"output":"TOIMPLEMENT","name":"sort school","test_code":"TOIMPLEMENT","message":null,"status":"pass"}""")
+    assert(testCases(3).toString() == """{"output":null,"name":"add students to different grades","test_code":null,"message":null,"status":"pass"}""")
+    assert(testCases(4).toString() == """{"output":null,"name":"get students in a grade","test_code":null,"message":null,"status":"pass"}""")
+    assert(testCases(5).toString() == """{"output":null,"name":"get students in a non-existent grade","test_code":null,"message":null,"status":"pass"}""")
+    assert(testCases(6).toString() == """{"output":null,"name":"sort school","test_code":null,"message":null,"status":"pass"}""")
 
   }
 
