@@ -21,5 +21,5 @@
 [error]     school.db should (Map())
 [error]               ^
 [error] one error found
-[error] (Test / compileIncremental) Compilation failed
+[error] (Compile / compileIncremental) Compilation failed
 [error] Total time: 2 s, completed Feb 21, 2021, 2:37:03 PM
