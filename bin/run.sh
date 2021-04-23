@@ -54,6 +54,8 @@ mv -f "${original_tests_file}" "${tests_file}"
 popd > /dev/null
 
 # Write the results.json file
-sbt "set offline := true" "run ${build_log_file} ${tests_results_file} ${results_file}" > "${runner_log_file}"
+# sbt "set offline := true"
+
+java -jar "target/scala-2.13/TestRunner-assembly-0.1.0-SNAPSHOT.jar ${build_log_file} ${tests_results_file} ${results_file}" > "${runner_log_file}"
 
 echo "${slug}: done"
