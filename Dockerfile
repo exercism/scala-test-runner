@@ -5,7 +5,7 @@ WORKDIR /opt/test-runner
 COPY project/ project/
 COPY src/ src/
 COPY build.sbt build.sbt
-RUN sbt compile
+RUN sbt assembly
 
 COPY . .
 
