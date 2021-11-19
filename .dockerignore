@@ -2,3 +2,4 @@
 .github/
 tests/
 .appends
+.gitignore
