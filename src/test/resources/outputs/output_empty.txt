@@ -1,15 +1,13 @@
-[error] /opt/test-runner/tests/example-empty-file/src/test/scala/ExampleEmptyFileTest.scala:7:5: not found: value Leap
-[error]     Leap.leapYear(2015) should be (false)
-[error]     ^
-[error] /opt/test-runner/tests/example-empty-file/src/test/scala/ExampleEmptyFileTest.scala:12:5: not found: value Leap
-[error]     Leap.leapYear(1996) should be (true)
-[error]     ^
-[error] /opt/test-runner/tests/example-empty-file/src/test/scala/ExampleEmptyFileTest.scala:17:5: not found: value Leap
-[error]     Leap.leapYear(2100) should be (false)
-[error]     ^
-[error] /opt/test-runner/tests/example-empty-file/src/test/scala/ExampleEmptyFileTest.scala:22:5: not found: value Leap
-[error]     Leap.leapYear(2000) should be (true)
-[error]     ^
-[error] four errors found
-[error] (Test / compileIncremental) Compilation failed
-[error] Total time: 4 s, completed Apr 14, 2021 2:11:23 PM
+/tmp/exercise/src/test/scala/ExampleEmptyFileTest.scala:7: error: not found: value Leap
+    Leap.leapYear(2015) should be (false)
+    ^
+/tmp/exercise/src/test/scala/ExampleEmptyFileTest.scala:12: error: not found: value Leap
+    Leap.leapYear(1996) should be (true)
+    ^
+/tmp/exercise/src/test/scala/ExampleEmptyFileTest.scala:17: error: not found: value Leap
+    Leap.leapYear(2100) should be (false)
+    ^
+/tmp/exercise/src/test/scala/ExampleEmptyFileTest.scala:22: error: not found: value Leap
+    Leap.leapYear(2000) should be (true)
+    ^
+4 errors

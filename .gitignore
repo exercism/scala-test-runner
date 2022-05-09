@@ -1,7 +1,13 @@
 .bsp/
 .idea/
+.vscode/
+.metals/
+.bloop/
+dumps/
 target/
 tests/**/results.json
 tests/**/build.log
 tests/**/runner.log
 tests/**/*.original
+project/metals.sbt
+project/project

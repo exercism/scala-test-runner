@@ -36,8 +36,7 @@
       val fileSource = Source.fromFile(buildLogFilePath)
       val rawContent = fileSource.mkString
       fileSource.close
-      if (rawContent.contains("[error] (Compile / compileIncremental) Compilation failed") ||
-          rawContent.contains("[error] (Test / compileIncremental) Compilation failed")) rawContent else ""
+      if (rawContent.contains("error: ")) rawContent else ""
     }
 
     def toTestCaseJSON(testCase: JSONObject): JSONObject = {
@@ -53,7 +52,7 @@
     def toExercismJSON(buildLogFilePath: String, testResultsFilePath: String): JSONObject = {
       val baseObject = new JSONObject().put("version", 2)
       val errorMessage = findErrorsInLog(buildLogFilePath)
-      if(!errorMessage.isEmpty) {
+      if(errorMessage.nonEmpty) {
         baseObject
         .put("status", "error")
         .put("message", errorMessage)
