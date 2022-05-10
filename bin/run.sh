@@ -37,9 +37,6 @@ build_log_file="${output_dir}/build.log"
 runner_log_file="${output_dir}/runner.log"
 tests_results_file="${workdir}/test-reports/TEST-${exercise}Test.xml"
 
-# ensure scala binaries are available in the PATH
-export PATH="$PATH:/opt/test-runner/scala-2.13.8/bin"
-
 # Create the output directory if it doesn't exist
 mkdir -p "${output_dir}"
 
