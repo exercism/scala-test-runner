@@ -62,4 +62,7 @@ scala -classpath "${test_runner_jar}" org.scalatest.tools.Runner -R "${workdir_t
 # Write the results.json file in the exercism format
 java -jar "${test_runner_jar}" "${build_log_file}" "${tests_results_file}" "${results_file}" &> "${runner_log_file}"
 
+# change workdir back to the original input_dir in the final results file
+sed -i "s~${workdir}~${input_dir}~g" "${results_file}"
+
 echo "${slug}: done"
