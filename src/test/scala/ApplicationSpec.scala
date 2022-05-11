@@ -1,7 +1,8 @@
 import org.json.JSONObject
-import org.scalatest.{Matchers, FunSuite}
+import org.scalatest.funsuite.AnyFunSuite
+import org.scalatest.matchers.should.Matchers
 
-class ApplicationSpec extends FunSuite with Matchers {
+class ApplicationSpec extends AnyFunSuite with Matchers {
 
   test("A successful xml should pass simply") {
     val xmlTestURL = getClass.getResource("/GradeSchool_successful.xml").getPath
