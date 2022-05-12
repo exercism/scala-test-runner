@@ -1,25 +1,49 @@
-[info] Loading project definition from /Users/pro/Exercism/scala/grade-school/project
-[info] Loading settings for project grade-school from build.sbt ...
-[info] Set current project to grade-school (in build file:/Users/pro/Exercism/scala/grade-school/)
-[info] Compiling 1 Scala source to /Users/pro/Exercism/scala/grade-school/target/scala-2.13/test-classes ...
-[error] /Users/pro/Exercism/scala/grade-school/src/test/scala/GradeSchoolTest.scala:8:15: overloaded method should with alternatives:
-[error]   (endWithWord: org.scalatest.words.EndWithWord)(implicit ev: GradeSchoolTest.this.school.DB <:< String): GradeSchoolTest.this.ResultOfEndWithWordForString <and>
-[error]   (startWithWord: org.scalatest.words.StartWithWord)(implicit ev: GradeSchoolTest.this.school.DB <:< String): GradeSchoolTest.this.ResultOfStartWithWordForString <and>
-[error]   (includeWord: org.scalatest.words.IncludeWord)(implicit ev: GradeSchoolTest.this.school.DB <:< String): GradeSchoolTest.this.ResultOfIncludeWordForString <and>
-[error]   (notExist: org.scalatest.words.ResultOfNotExist)(implicit existence: org.scalatest.enablers.Existence[GradeSchoolTest.this.school.DB]): org.scalatest.Assertion <and>
-[error]   (existWord: org.scalatest.words.ExistWord)(implicit existence: org.scalatest.enablers.Existence[GradeSchoolTest.this.school.DB]): org.scalatest.Assertion <and>
-[error]   (containWord: org.scalatest.words.ContainWord)org.scalatest.words.ResultOfContainWord[GradeSchoolTest.this.school.DB] <and>
-[error]   (haveWord: org.scalatest.words.HaveWord)GradeSchoolTest.this.ResultOfHaveWordForExtent[GradeSchoolTest.this.school.DB] <and>
-[error]   (beWord: org.scalatest.words.BeWord)GradeSchoolTest.this.ResultOfBeWordForAny[GradeSchoolTest.this.school.DB] <and>
-[error]   (inv: org.scalactic.TripleEqualsSupport.TripleEqualsInvocationOnSpread[GradeSchoolTest.this.school.DB])(implicit ev: Numeric[GradeSchoolTest.this.school.DB]): org.scalatest.Assertion <and>
-[error]   [U](inv: org.scalactic.TripleEqualsSupport.TripleEqualsInvocation[U])(implicit constraint: org.scalactic.CanEqual[GradeSchoolTest.this.school.DB,U]): org.scalatest.Assertion <and>
-[error]   (notWord: org.scalatest.words.NotWord)org.scalatest.words.ResultOfNotWordForAny[GradeSchoolTest.this.school.DB] <and>
-[error]   [TYPECLASS1[_], TYPECLASS2[_]](rightMatcherFactory2: org.scalatest.matchers.MatcherFactory2[GradeSchoolTest.this.school.DB,TYPECLASS1,TYPECLASS2])(implicit typeClass1: TYPECLASS1[GradeSchoolTest.this.school.DB], typeClass2: TYPECLASS2[GradeSchoolTest.this.school.DB]): org.scalatest.Assertion <and>
-[error]   [TYPECLASS1[_]](rightMatcherFactory1: org.scalatest.matchers.MatcherFactory1[GradeSchoolTest.this.school.DB,TYPECLASS1])(implicit typeClass1: TYPECLASS1[GradeSchoolTest.this.school.DB]): org.scalatest.Assertion <and>
-[error]   (rightMatcherX1: org.scalatest.matchers.Matcher[GradeSchoolTest.this.school.DB])org.scalatest.Assertion
-[error]  cannot be applied to (scala.collection.immutable.Map[Nothing,Nothing])
-[error]     school.db should (Map())
-[error]               ^
-[error] one error found
-[error] (Compile / compileIncremental) Compilation failed
-[error] Total time: 2 s, completed Feb 21, 2021, 2:37:03 PM
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:8: error: value should is not a member of Map[String,Int]
+      school.db should be (Map())
+                ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:8: error: not found: value be
+      school.db should be (Map())
+                       ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:14: error: value should is not a member of Map[String,Int]
+    school.db should be (Map(2 -> Seq("Aimee")))
+              ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:14: error: not found: value be
+    school.db should be (Map(2 -> Seq("Aimee")))
+                     ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:22: error: value should is not a member of Map[String,Int]
+    school.db should be (Map(2 -> Seq("James", "Blair", "Paul")))
+              ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:22: error: not found: value be
+    school.db should be (Map(2 -> Seq("James", "Blair", "Paul")))
+                     ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:29: error: value should is not a member of Map[String,Int]
+    school.db should be (Map(3 -> Seq("Chelsea"), 7 -> Seq("Logan")))
+              ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:29: error: not found: value be
+    school.db should be (Map(3 -> Seq("Chelsea"), 7 -> Seq("Logan")))
+                     ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:37: error: value should is not a member of Seq[String]
+    school.grade(5) should be (Seq("Franklin", "Bradley"))
+                    ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:37: error: not found: value be
+    school.grade(5) should be (Seq("Franklin", "Bradley"))
+                           ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:42: error: value should is not a member of Seq[String]
+    school.grade(1) should be (Seq())
+                    ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:42: error: not found: value be
+    school.grade(1) should be (Seq())
+                           ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:56: error: value should is not a member of Map[Int,Seq[String]]
+    school.sorted should be (sorted)
+                  ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:56: error: not found: value be
+    school.sorted should be (sorted)
+                         ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:57: error: value should is not a member of List[Int]
+    school.sorted.keys.toList should be (Seq(3, 4, 6))
+                              ^
+/tmp/exercise/src/test/scala/GradeSchoolTest.scala:57: error: not found: value be
+    school.sorted.keys.toList should be (Seq(3, 4, 6))
+                                     ^
+16 errors

@@ -13,8 +13,6 @@
 
 exit_code=0
 
-sbt test
-
 # Iterate over all test directories
 for test_dir in tests/*; do
     test_dir_name=$(basename "${test_dir}")

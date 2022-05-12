@@ -24,36 +24,45 @@ fi
 slug="$1"
 input_dir="${2%/}"
 output_dir="${3%/}"
+
 exercise=$(echo "${slug}" | sed -E 's/(^|-)([a-z])/\U\2/g')
-tests_file="${input_dir}/src/test/scala/${exercise}Test.scala"
-tests_results_file="${input_dir}/target/test-reports/TEST-${exercise}Test.xml"
-original_tests_file="${input_dir}/src/test/scala/${exercise}Test.scala.original"
+
+test_runner_jar=/opt/test-runner/target/scala-2.13/TestRunner-assembly-0.1.0-SNAPSHOT.jar
+
+workdir=/tmp/exercise
+workdir_target=/tmp/exercise/target
+
 results_file="${output_dir}/results.json"
 build_log_file="${output_dir}/build.log"
 runner_log_file="${output_dir}/runner.log"
+tests_results_file="${workdir}/test-reports/TEST-${exercise}Test.xml"
 
 # Create the output directory if it doesn't exist
 mkdir -p "${output_dir}"
 
+# ensure a clean workdir
+rm -rf "${workdir}"
+mkdir -p "${workdir}"
+mkdir -p "${workdir_target}"
+
+echo
 echo "${slug}: testing..."
 
-pushd "${input_dir}" > /dev/null
-
-cp "${tests_file}" "${original_tests_file}"
+cp -R "${input_dir}"/src "${workdir}"
 
 # Enable all pending tests
-sed -i 's/pending//g' "${tests_file}"
+sed -i 's/pending//g' "${workdir}"/src/test/scala/*
 
-sbt "set offline := true" test > "${build_log_file}"
+# compile source and tests
+scalac -classpath "${test_runner_jar}" -d "${workdir_target}" "${workdir}"/src/main/scala/* "${workdir}"/src/test/scala/* &> "${build_log_file}"
 
-# Sanitize the output
-sed -i -E '/^\[info\]/d' "${build_log_file}"
+# run tests
+scala -classpath "${test_runner_jar}" org.scalatest.tools.Runner -R "${workdir_target}" -u "${workdir}"/test-reports
 
-mv -f "${original_tests_file}" "${tests_file}"
+# Write the results.json file in the exercism format
+java -jar "${test_runner_jar}" "${build_log_file}" "${tests_results_file}" "${results_file}" &> "${runner_log_file}"
 
-popd > /dev/null
-
-# Write the results.json file
-java -jar target/scala-2.12/TestRunner-assembly-0.1.0-SNAPSHOT.jar "${build_log_file}" "${tests_results_file}" "${results_file}" > "${runner_log_file}"
+# change workdir back to the original input_dir in the final results file
+sed -i "s~${workdir}~${input_dir}~g" "${results_file}"
 
 echo "${slug}: done"
