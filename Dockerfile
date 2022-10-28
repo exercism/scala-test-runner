@@ -1,11 +1,6 @@
-FROM mozilla/sbt:8u292_1.5.7
+FROM sbtscala/scala-sbt:eclipse-temurin-17.0.4_1.7.2_2.13.10
 
 WORKDIR /opt/test-runner
-
-RUN wget https://downloads.lightbend.com/scala/2.13.8/scala-2.13.8.tgz
-RUN tar zxvf scala-2.13.8.tgz
-
-ENV PATH="$PATH:/opt/test-runner/scala-2.13.8/bin"
 
 COPY project/ project/
 COPY src/ src/
