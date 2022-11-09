@@ -1,4 +1,4 @@
-FROM sbtscala/scala-sbt:eclipse-temurin-17.0.4_1.7.2_2.13.10
+FROM sbtscala/scala-sbt:openjdk-8u342_1.7.3_2.13.10
 
 WORKDIR /opt/test-runner
 
