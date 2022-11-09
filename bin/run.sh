@@ -24,8 +24,7 @@ fi
 slug="$1"
 input_dir="${2%/}"
 output_dir="${3%/}"
-
-exercise=$(echo "${slug}" | sed -E 's/(^|-)([a-z])/\U\2/g')
+path=${CONFIG_PATH:-'.meta'}
 
 test_runner_jar=/opt/test-runner/target/scala-2.13/TestRunner-assembly-0.1.0-SNAPSHOT.jar
 
@@ -35,7 +34,22 @@ workdir_target=/tmp/exercise/target
 results_file="${output_dir}/results.json"
 build_log_file="${output_dir}/build.log"
 runner_log_file="${output_dir}/runner.log"
-tests_results_file="${workdir}/test-reports/TEST-${exercise}Test.xml"
+
+function test_name_from_config() {
+    config="${input_dir}/${path}/config.json"
+    [[ -f "${config}" ]] || return
+    test_files=($(cat "${config}" | jq -r '.files.test[]'))
+    [[ "${#test_files[@]}" == '1' ]] || return
+    test_file=$(basename "${test_files[0]}")
+    echo "${test_file/.scala/}"
+}
+
+function test_name_from_slug() {
+  exercise=$(echo "${slug}" | sed -E 's/(^|-)([a-z])/\U\2/g')
+  echo "${exercise}Test"
+}
+
+tests_results_file="${workdir}/test-reports/TEST-$(test_name_from_config || test_name_from_slug).xml"
 
 # Create the output directory if it doesn't exist
 mkdir -p "${output_dir}"
