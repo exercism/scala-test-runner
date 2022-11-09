@@ -1,0 +1,8 @@
+{
+  "blurb": "Verify that expected test class names can be extracted from .meta/config.json",
+  "files": {
+    "test": [
+      "src/test/scala/LeapTest.scala"
+    ]
+  }
+}
