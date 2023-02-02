@@ -42,7 +42,7 @@
     def toTestCaseJSON(testCase: JSONObject): JSONObject = {
       val fail = testCase.optJSONObject("failure")
       new JSONObject()
-      .put("name", testCase.getString("name"))
+      .put("name", testCase.get("name").toString)
       .put("status", if(fail != null) "fail" else "pass" )
       .put("message", if(fail != null) fail.getString("message") else JSONObject.NULL)
       .put("output", JSONObject.NULL)
