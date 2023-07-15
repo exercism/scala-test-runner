@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
 # Synopsis:
 # Test the test runner by running it against a predefined set of solutions 
@@ -30,7 +30,7 @@ for test_dir in tests/*; do
       "${results_file_path}"
 
     echo "${test_dir_name}: comparing results.json to expected_results.json"
-    diff "${results_file_path}" "${expected_results_file_path}"
+    diff <(jq < "${results_file_path}") <(jq < "${expected_results_file_path}")
 
     if [ $? -ne 0 ]; then
         exit_code=1

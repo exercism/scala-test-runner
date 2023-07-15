@@ -41,5 +41,4 @@ docker run \
     --mount type=bind,src="${input_dir}",dst=/solution \
     --mount type=bind,src="${output_dir}",dst=/output \
     --mount type=tmpfs,dst=/tmp \
-    --env CONFIG_PATH="${CONFIG_PATH}" \
-    exercism/test-runner "${slug}" /solution /output 
+    exercism/test-runner "${slug}" /solution /output
