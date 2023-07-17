@@ -1,0 +1,9 @@
+{
+  "blurb": "Verify that expected test class names can be extracted from .meta/config.json",
+  "files": {
+    "test": [
+      "src/test/scala/ExampleMultipleFilesTest.scala",
+      "src/test/scala/ExampleMultipleClassesTest.scala"
+    ]
+  }
+}

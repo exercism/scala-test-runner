@@ -24,32 +24,16 @@ fi
 slug="$1"
 input_dir="${2%/}"
 output_dir="${3%/}"
-path=${CONFIG_PATH:-'.meta'}
 
 test_runner_jar=/opt/test-runner/target/scala-2.13/TestRunner-assembly-0.1.0-SNAPSHOT.jar
 
 workdir=/tmp/exercise
-workdir_target=/tmp/exercise/target
+workdir_target="${workdir}/target"
+tests_reports_folder="${workdir}/test-reports"
 
 results_file="${output_dir}/results.json"
 build_log_file="${output_dir}/build.log"
 runner_log_file="${output_dir}/runner.log"
-
-function test_name_from_config() {
-    config="${input_dir}/${path}/config.json"
-    [[ -f "${config}" ]] || return
-    test_files=($(cat "${config}" | jq -r '.files.test[]'))
-    [[ "${#test_files[@]}" == '1' ]] || return
-    test_file=$(basename "${test_files[0]}")
-    echo "${test_file/.scala/}"
-}
-
-function test_name_from_slug() {
-  exercise=$(echo "${slug}" | sed -E 's/(^|-)([a-z])/\U\2/g')
-  echo "${exercise}Test"
-}
-
-tests_results_file="${workdir}/test-reports/TEST-$(test_name_from_config || test_name_from_slug).xml"
 
 # Create the output directory if it doesn't exist
 mkdir -p "${output_dir}"
@@ -74,7 +58,7 @@ scalac -classpath "${test_runner_jar}" -d "${workdir_target}" "${workdir}"/src/m
 scala -classpath "${test_runner_jar}" org.scalatest.tools.Runner -R "${workdir_target}" -u "${workdir}"/test-reports
 
 # Write the results.json file in the exercism format
-java -jar "${test_runner_jar}" "${build_log_file}" "${tests_results_file}" "${results_file}" &> "${runner_log_file}"
+java -jar "${test_runner_jar}" "${build_log_file}" "${tests_reports_folder}" "${results_file}" &> "${runner_log_file}"
 
 # change workdir back to the original input_dir in the final results file
 sed -i "s~${workdir}~${input_dir}~g" "${results_file}"
