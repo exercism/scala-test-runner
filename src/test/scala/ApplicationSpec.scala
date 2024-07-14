@@ -1,26 +1,23 @@
 import org.json.{JSONArray, JSONObject}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
-
 import java.io.File
 
-class ApplicationSpec extends AnyFunSuite with Matchers {
+class ApplicationSpec extends AnyFunSuite, Matchers:
 
-  def getTestCasesJSON(path: String): JSONArray = {
+  def getTestCasesJSON(path: String): JSONArray =
     val file = new File(path)
     Application.getTestSuiteObject(file).getJSONArray("testcase")
-  }
 
-  test("A successful xml should pass simply") {
+  test("A successful xml should pass simply"):
     val xmlTestURL = getClass.getResource("/GradeSchool_successful.xml").getPath
-    val jsonArray = getTestCasesJSON(xmlTestURL)
-    val objects = (0 until jsonArray.length).map(jsonArray.getJSONObject(_).optJSONObject("failure"))
+    val jsonArray  = getTestCasesJSON(xmlTestURL)
+    val objects    = (0 until jsonArray.length).map(jsonArray.getJSONObject(_).optJSONObject("failure"))
     objects should contain only null
-  }
 
-  test("A successful xml should be properly formatted as JSON") {
-    val xmlTestURL = getClass.getResource("/GradeSchool_successful.xml").getPath
-    val outputFileURL = getClass.getResource("/outputs/output.txt").getPath
+  test("A successful xml should be properly formatted as JSON"):
+    val xmlTestURL                 = getClass.getResource("/GradeSchool_successful.xml").getPath
+    val outputFileURL              = getClass.getResource("/outputs/output.txt").getPath
     val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, List(new File(xmlTestURL)))
 
     assert(exercismOutput.getInt("version") == 2)
@@ -36,11 +33,10 @@ class ApplicationSpec extends AnyFunSuite with Matchers {
     assert(testCases(4).toString() == """{"output":null,"name":"get students in a grade","test_code":null,"message":null,"status":"pass"}""")
     assert(testCases(5).toString() == """{"output":null,"name":"get students in a non-existent grade","test_code":null,"message":null,"status":"pass"}""")
     assert(testCases(6).toString() == """{"output":null,"name":"sort school","test_code":null,"message":null,"status":"pass"}""")
-  }
 
-  test("A successful xml with a single test case should be properly formatted as JSON") {
-    val xmlTestURL = getClass.getResource("/HelloWorld_successful.xml").getPath
-    val outputFileURL = getClass.getResource("/outputs/output.txt").getPath
+  test("A successful xml with a single test case should be properly formatted as JSON"):
+    val xmlTestURL                 = getClass.getResource("/HelloWorld_successful.xml").getPath
+    val outputFileURL              = getClass.getResource("/outputs/output.txt").getPath
     val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, List(new File(xmlTestURL)))
 
     assert(exercismOutput.getInt("version") == 2)
@@ -50,18 +46,16 @@ class ApplicationSpec extends AnyFunSuite with Matchers {
     val testCases = exercismOutput.get("tests").asInstanceOf[Array[JSONObject]]
     assert(testCases.length == 1)
     assert(testCases(0).toString() == """{"output":null,"name":"Say Hi!","test_code":null,"message":null,"status":"pass"}""")
-  }
 
-  test("A failing xml should contain a failure object") {
+  test("A failing xml should contain a failure object"):
     val xmlTestURL = getClass.getResource("/GradeSchool_failure.xml").getFile
-    val jsonArray = getTestCasesJSON(xmlTestURL)
-    val objects = (0 until jsonArray.length).map(jsonArray.getJSONObject(_).optJSONObject("failure"))
+    val jsonArray  = getTestCasesJSON(xmlTestURL)
+    val objects    = (0 until jsonArray.length).map(jsonArray.getJSONObject(_).optJSONObject("failure"))
     objects.exists(_ !== null)
-  }
 
-  test("A failing xml should be properly formatted as JSON") {
-    val xmlTestURL = getClass.getResource("/GradeSchool_failure.xml").getPath
-    val outputFileURL = getClass.getResource("/outputs/output_fail.txt").getPath
+  test("A failing xml should be properly formatted as JSON"):
+    val xmlTestURL                 = getClass.getResource("/GradeSchool_failure.xml").getPath
+    val outputFileURL              = getClass.getResource("/outputs/output_fail.txt").getPath
     val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, List(new File(xmlTestURL)))
     assert(exercismOutput.getInt("version") == 2)
     assert(exercismOutput.getString("status") == "fail")
@@ -80,19 +74,15 @@ class ApplicationSpec extends AnyFunSuite with Matchers {
     assert(testCases(4).toString() == """{"output":null,"name":"get students in a grade","test_code":null,"message":null,"status":"pass"}""")
     assert(testCases(5).toString() == """{"output":null,"name":"get students in a non-existent grade","test_code":null,"message":null,"status":"pass"}""")
     assert(testCases(6).toString() == """{"output":null,"name":"sort school","test_code":null,"message":null,"status":"pass"}""")
-  }
 
-  test("An xml with a syntax error should be properly reported as JSON") {
-    val outputFileURL = getClass.getResource("/outputs/output_error.txt").getPath
+  test("An xml with a syntax error should be properly reported as JSON"):
+    val outputFileURL              = getClass.getResource("/outputs/output_error.txt").getPath
     val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, null)
     assert(exercismOutput.getInt("version") == 2)
     assert(exercismOutput.getString("status") == "error")
-  }
 
-  test("An xml with a syntax error due to an empty file should be properly reported as JSON") {
-    val outputFileURL = getClass.getResource("/outputs/output_empty.txt").getPath
+  test("An xml with a syntax error due to an empty file should be properly reported as JSON"):
+    val outputFileURL              = getClass.getResource("/outputs/output_empty.txt").getPath
     val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, null)
     assert(exercismOutput.getInt("version") == 2)
     assert(exercismOutput.getString("status") == "error")
-  }
-}
