@@ -2,7 +2,6 @@ import java.time.LocalDate
 
 import monocle.Lens
 import monocle.syntax.all._
-import monocle.macros.syntax.lens._
 import monocle.macros.GenLens
 
 object ExampleLensPerson {
