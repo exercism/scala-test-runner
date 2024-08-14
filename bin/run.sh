@@ -25,7 +25,7 @@ slug="$1"
 input_dir="${2%/}"
 output_dir="${3%/}"
 
-test_runner_jar=/opt/test-runner/target/scala-2.13/TestRunner-assembly-0.1.0-SNAPSHOT.jar
+test_runner_jar=/opt/test-runner/target/scala-3.4.2/TestRunner-assembly-0.1.0-SNAPSHOT.jar
 
 workdir=/tmp/exercise
 workdir_target="${workdir}/target"
