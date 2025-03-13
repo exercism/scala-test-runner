@@ -1,9 +1,8 @@
-FROM sbtscala/scala-sbt:eclipse-temurin-jammy-22_36_1.10.1_3.4.2
+FROM sbtscala/scala-sbt:eclipse-temurin-alpine-22_36_1.10.1_3.4.2
 
 WORKDIR /opt/test-runner
 
-RUN apt-get update
-RUN apt-get install --yes jq
+RUN apk add --no-cache jq
 
 COPY project/ project/
 COPY src/ src/
