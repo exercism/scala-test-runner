@@ -77,12 +77,12 @@ class ApplicationSpec extends AnyFunSuite, Matchers:
 
   test("An xml with a syntax error should be properly reported as JSON"):
     val outputFileURL              = getClass.getResource("/outputs/output_error.txt").getPath
-    val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, null)
+    val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, Nil)
     assert(exercismOutput.getInt("version") == 2)
     assert(exercismOutput.getString("status") == "error")
 
   test("An xml with a syntax error due to an empty file should be properly reported as JSON"):
     val outputFileURL              = getClass.getResource("/outputs/output_empty.txt").getPath
-    val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, null)
+    val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, Nil)
     assert(exercismOutput.getInt("version") == 2)
     assert(exercismOutput.getString("status") == "error")
