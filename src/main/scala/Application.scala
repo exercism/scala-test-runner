@@ -67,7 +67,7 @@ object Application:
     val baseObject   = new JSONObject().put("version", 2)
     val errorMessage = findErrorsInLog(buildLogFilePath)
 
-    if errorMessage.nonEmpty then
+    if errorMessage.nonEmpty || testResultsFiles.isEmpty then
       baseObject
         .put("status", "error")
         .put("message", errorMessage)
