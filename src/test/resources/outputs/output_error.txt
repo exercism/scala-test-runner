@@ -1,49 +1,56 @@
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:8: error: value should is not a member of Map[String,Int]
-      school.db should be (Map())
-                ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:8: error: not found: value be
-      school.db should be (Map())
-                       ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:14: error: value should is not a member of Map[String,Int]
-    school.db should be (Map(2 -> Seq("Aimee")))
-              ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:14: error: not found: value be
-    school.db should be (Map(2 -> Seq("Aimee")))
-                     ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:22: error: value should is not a member of Map[String,Int]
-    school.db should be (Map(2 -> Seq("James", "Blair", "Paul")))
-              ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:22: error: not found: value be
-    school.db should be (Map(2 -> Seq("James", "Blair", "Paul")))
-                     ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:29: error: value should is not a member of Map[String,Int]
-    school.db should be (Map(3 -> Seq("Chelsea"), 7 -> Seq("Logan")))
-              ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:29: error: not found: value be
-    school.db should be (Map(3 -> Seq("Chelsea"), 7 -> Seq("Logan")))
-                     ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:37: error: value should is not a member of Seq[String]
-    school.grade(5) should be (Seq("Franklin", "Bradley"))
-                    ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:37: error: not found: value be
-    school.grade(5) should be (Seq("Franklin", "Bradley"))
-                           ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:42: error: value should is not a member of Seq[String]
-    school.grade(1) should be (Seq())
-                    ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:42: error: not found: value be
-    school.grade(1) should be (Seq())
-                           ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:56: error: value should is not a member of Map[Int,Seq[String]]
-    school.sorted should be (sorted)
-                  ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:56: error: not found: value be
-    school.sorted should be (sorted)
-                         ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:57: error: value should is not a member of List[Int]
-    school.sorted.keys.toList should be (Seq(3, 4, 6))
-                              ^
-/tmp/exercise/src/test/scala/GradeSchoolTest.scala:57: error: not found: value be
-    school.sorted.keys.toList should be (Seq(3, 4, 6))
-                                     ^
-16 errors
+[31m[31m-- [E103] Syntax Error: /tmp/exercise/src/main/scala/ExampleSyntaxError.scala:1:0 [0m[0m
+[31m1 |[0mobjeTTTWE @#Leap
+[31m[31m  |[0m^^^^^^^^^[0m
+[31m  |[0mIllegal start of toplevel definition
+[31m  |[0m
+[31m  |[0m longer explanation available when compiling with `-explain`
+[31m[31m-- [E006] Not Found Error: /tmp/exercise/src/test/scala/ExampleSyntaxErrorTest.scala:8:4 [0m[0m
+[31m8 |[0m    Leap.leapYear([31m2015[0m) should be ([31mfalse[0m)
+[31m[31m  |[0m    ^^^^[0m
+[31m  |[0m    Not found: Leap - did you mean trap?
+[31m  |[0m
+[31m  |[0m longer explanation available when compiling with `-explain`
+[31m[31m-- [E006] Not Found Error: /tmp/exercise/src/test/scala/ExampleSyntaxErrorTest.scala:13:4 [0m[0m
+[31m13 |[0m    Leap.leapYear([31m1996[0m) should be ([31mtrue[0m)
+[31m[31m   |[0m    ^^^^[0m
+[31m   |[0m    Not found: Leap - did you mean trap?
+[31m   |[0m
+[31m   |[0m longer explanation available when compiling with `-explain`
+[31m[31m-- [E006] Not Found Error: /tmp/exercise/src/test/scala/ExampleSyntaxErrorTest.scala:18:4 [0m[0m
+[31m18 |[0m    Leap.leapYear([31m2100[0m) should be ([31mfalse[0m)
+[31m[31m   |[0m    ^^^^[0m
+[31m   |[0m    Not found: Leap - did you mean trap?
+[31m   |[0m
+[31m   |[0m longer explanation available when compiling with `-explain`
+[31m[31m-- [E006] Not Found Error: /tmp/exercise/src/test/scala/ExampleSyntaxErrorTest.scala:23:4 [0m[0m
+[31m23 |[0m    Leap.leapYear([31m2000[0m) should be ([31mtrue[0m)
+[31m[31m   |[0m    ^^^^[0m
+[31m   |[0m    Not found: Leap - did you mean trap?
+[31m   |[0m
+[31m   |[0m longer explanation available when compiling with `-explain`
+[33m[33m-- Warning: /tmp/exercise/src/test/scala/ExampleSyntaxErrorTest.scala:8:24 -----[0m[0m
+[33m8 |[0m    Leap.leapYear([31m2015[0m) should be ([31mfalse[0m)
+[33m[33m  |[0m                        ^^^^^^[0m
+[33m  |[0mAlphanumeric method should is not declared [33minfix[0m; it should not be used as infix operator.
+[33m  |[0mInstead, use method syntax .should(...) or backticked identifier `should`.
+[33m  |[0mThe latter can be rewritten automatically under -rewrite -source 3.4-migration.
+[33m[33m-- Warning: /tmp/exercise/src/test/scala/ExampleSyntaxErrorTest.scala:13:24 ----[0m[0m
+[33m13 |[0m    Leap.leapYear([31m1996[0m) should be ([31mtrue[0m)
+[33m[33m   |[0m                        ^^^^^^[0m
+[33m   |[0mAlphanumeric method should is not declared [33minfix[0m; it should not be used as infix operator.
+[33m   |[0mInstead, use method syntax .should(...) or backticked identifier `should`.
+[33m   |[0mThe latter can be rewritten automatically under -rewrite -source 3.4-migration.
+[33m[33m-- Warning: /tmp/exercise/src/test/scala/ExampleSyntaxErrorTest.scala:18:24 ----[0m[0m
+[33m18 |[0m    Leap.leapYear([31m2100[0m) should be ([31mfalse[0m)
+[33m[33m   |[0m                        ^^^^^^[0m
+[33m   |[0mAlphanumeric method should is not declared [33minfix[0m; it should not be used as infix operator.
+[33m   |[0mInstead, use method syntax .should(...) or backticked identifier `should`.
+[33m   |[0mThe latter can be rewritten automatically under -rewrite -source 3.4-migration.
+[33m[33m-- Warning: /tmp/exercise/src/test/scala/ExampleSyntaxErrorTest.scala:23:24 ----[0m[0m
+[33m23 |[0m    Leap.leapYear([31m2000[0m) should be ([31mtrue[0m)
+[33m[33m   |[0m                        ^^^^^^[0m
+[33m   |[0mAlphanumeric method should is not declared [33minfix[0m; it should not be used as infix operator.
+[33m   |[0mInstead, use method syntax .should(...) or backticked identifier `should`.
+[33m   |[0mThe latter can be rewritten automatically under -rewrite -source 3.4-migration.
+4 warnings found
+5 errors found

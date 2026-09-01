@@ -41,12 +41,27 @@ object Application:
     bufferedSource.close
     XML.toJSONObject(xml).getJSONObject("testsuite")
 
-  // log, not xml
-  def findErrorsInLog(buildLogFilePath: String): String =
+  def readBuildLog(buildLogFilePath: String): String =
     val fileSource = Source.fromFile(buildLogFilePath)
     val rawContent = fileSource.mkString
     fileSource.close
+    rawContent
+
+  // log, not xml
+  def findErrorsInLog(buildLogFilePath: String): String =
+    val rawContent = readBuildLog(buildLogFilePath)
     if rawContent.contains("Error: ") then rawContent else ""
+
+  // Nothing ran, and the build log holds no error this runner recognises: the
+  // compiler died in an unexpected way, a suite failed before writing its
+  // report, the report folder was empty. Show whatever the build printed so
+  // that the student is not left with a bare "error".
+  def missingTestResultsMessage(buildLogFilePath: String): String =
+    val buildLog = readBuildLog(buildLogFilePath)
+    if buildLog.nonEmpty then buildLog
+    else
+      "No test results were produced, so no test cases can be reported. If your solution compiles and its tests run locally, " +
+        "please report this at https://github.com/exercism/scala-test-runner/issues"
 
   def toTestCaseJSON(testCase: JSONObject): JSONObject =
     val fail = testCase.optJSONObject("failure")
@@ -67,7 +82,7 @@ object Application:
     val baseObject   = new JSONObject().put("version", 2)
     val errorMessage = findErrorsInLog(buildLogFilePath)
 
-    if errorMessage.nonEmpty || testResultsFiles.isEmpty then
+    if errorMessage.nonEmpty then
       baseObject
         .put("status", "error")
         .put("message", errorMessage)
@@ -86,8 +101,13 @@ object Application:
             case obj: JSONObject => Array(toTestCaseJSON(obj))
           (failuresCount, testCases),
         )
-        .reduce((a, b) => (a._1 + b._1, Array.concat(a._2, b._2)))
-      baseObject
-        .put("status", if failuresCount > 0 then "fail" else "pass")
-        .put("message", JSONObject.NULL)
-        .put("tests", testCases)
+        .foldLeft((0, Array.empty[JSONObject]))((a, b) => (a._1 + b._1, Array.concat(a._2, b._2)))
+      if testCases.isEmpty then
+        baseObject
+          .put("status", "error")
+          .put("message", missingTestResultsMessage(buildLogFilePath))
+      else
+        baseObject
+          .put("status", if failuresCount > 0 then "fail" else "pass")
+          .put("message", JSONObject.NULL)
+          .put("tests", testCases)

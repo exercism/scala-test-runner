@@ -2,8 +2,8 @@
 set -e
 
 # Synopsis:
-# Test the test runner Docker image by running it against a predefined set of 
-# solutions with an expected output.
+# Test the test runner Docker image by running its own unit tests and then
+# running it against a predefined set of solutions with an expected output.
 # The test runner Docker image is built automatically.
 
 # Output:
@@ -15,6 +15,10 @@ set -e
 
 # Build the Docker image
 docker build --rm -t exercism/test-runner .
+
+# Run the unit tests inside the image: `sbt assembly` does not run them, so
+# without this step a red test suite goes unnoticed by CI.
+docker run --rm --entrypoint sbt exercism/test-runner test
 
 # Run the Docker image using the settings mimicking the production environment
 # TODO: --read-only
