@@ -12,4 +12,7 @@ object Dependencies {
   )
 
   lazy val json = "org.json" % "json" % "20220320"
+
+  lazy val parserCombinators =
+    "org.scala-lang.modules" %% "scala-parser-combinators" % "2.4.0"
 }

@@ -13,5 +13,7 @@ lazy val root = (project in file("."))
     libraryDependencies += scalaCheck,
     libraryDependencies += json,
     // for the LensPerson exercise
-    libraryDependencies ++= monocle
+    libraryDependencies ++= monocle,
+    // for the SgfParsing, Alphametics, Forth, MatchingBrackets and Wordy exercises
+    libraryDependencies += parserCombinators
   )
