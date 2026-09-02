@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "output": null,
+      "name": "a solution that throws without a message still reports a failure",
+      "test_code": null,
+      "message": "java.lang.UnsupportedOperationException was thrown.",
+      "status": "fail"
+    }
+  ],
+  "message": null,
+  "version": 2,
+  "status": "fail"
+}

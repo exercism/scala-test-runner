@@ -1,0 +1,35 @@
+{
+  "tests": [
+    {
+      "output": "counted 3 sheep\n",
+      "name": "what a passing test prints is reported",
+      "test_code": null,
+      "message": null,
+      "status": "pass"
+    },
+    {
+      "output": "about to miscount\n",
+      "name": "what a failing test prints is reported",
+      "test_code": null,
+      "message": "2 was not equal to 3",
+      "status": "fail"
+    },
+    {
+      "output": null,
+      "name": "a test that prints nothing has no output",
+      "test_code": null,
+      "message": null,
+      "status": "pass"
+    },
+    {
+      "output": "sheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsh\nOutput was truncated. Please limit to 500 chars",
+      "name": "output too long for the interface is truncated",
+      "test_code": null,
+      "message": null,
+      "status": "pass"
+    }
+  ],
+  "message": null,
+  "version": 2,
+  "status": "fail"
+}

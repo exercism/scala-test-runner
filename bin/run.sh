@@ -29,7 +29,7 @@ test_runner_jar=/opt/test-runner/target/scala-3.4.2/TestRunner-assembly-0.1.0-SN
 
 workdir=/tmp/exercise
 workdir_target="${workdir}/target"
-tests_reports_folder="${workdir}/test-reports"
+test_results_file="${workdir}/test-results.json"
 
 results_file="${output_dir}/results.json"
 build_log_file="${output_dir}/build.log"
@@ -54,11 +54,11 @@ sed -i 's/pending//g' "${workdir}"/src/test/scala/*
 # compile source and tests
 scalac -classpath "${test_runner_jar}" -d "${workdir_target}" "${workdir}"/src/main/scala/* "${workdir}"/src/test/scala/* &> "${build_log_file}"
 
-# run tests
-scala -classpath "${test_runner_jar}" org.scalatest.tools.Runner -R "${workdir_target}" -u "${workdir}"/test-reports
+# run tests, recording what each test reported and printed
+java -classpath "${test_runner_jar}" TestRun "${workdir_target}" "${test_results_file}"
 
 # Write the results.json file in the exercism format
-java -jar "${test_runner_jar}" "${build_log_file}" "${tests_reports_folder}" "${results_file}" &> "${runner_log_file}"
+java -jar "${test_runner_jar}" "${build_log_file}" "${test_results_file}" "${results_file}" &> "${runner_log_file}"
 
 # change workdir back to the original input_dir in the final results file
 sed -i "s~${workdir}~${input_dir}~g" "${results_file}"
