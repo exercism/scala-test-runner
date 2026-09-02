@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "output": null,
+      "name": "a passing test that leaves a thread running behind it",
+      "test_code": null,
+      "message": null,
+      "status": "pass"
+    }
+  ],
+  "message": null,
+  "version": 2,
+  "status": "pass"
+}

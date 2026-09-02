@@ -3,8 +3,9 @@ import org.scalatest.events.{Event, TestCanceled, TestFailed, TestIgnored, TestP
 import org.scalatest.{Args, DoNotDiscover, Reporter, Suite}
 
 import java.io.{File, FileWriter}
-import java.lang.reflect.Modifier
+import java.lang.reflect.{InvocationTargetException, Modifier}
 import java.net.URLClassLoader
+import java.nio.charset.StandardCharsets.UTF_8
 import scala.collection.mutable.ListBuffer
 
 /** What a single test did, before it is shaped into the exercism format by [[Application]]. */
@@ -20,6 +21,21 @@ case class TestOutcome(name: String, status: String, message: Option[String], ou
 object TestRun:
 
   def main(args: Array[String]): Unit =
+    val status =
+      try
+        run(args)
+        0
+      catch
+        case error: Throwable =>
+          error.printStackTrace()
+          1
+    System.out.flush()
+    // A solution is free to leave a non-daemon thread running - an executor it never shut down, say - and that would
+    // keep this JVM alive long after the results are on disk, hanging the run until the platform gives up on it.
+    // `org.scalatest.tools.Runner.main`, which this replaces, exited explicitly for the same reason.
+    System.exit(status)
+
+  private def run(args: Array[String]): Unit =
     args match
       case Array(classesFolderPath, testResultsFilePath) =>
         val classesFolder = new File(classesFolderPath)
@@ -38,14 +54,16 @@ object TestRun:
       try
         val suite = suiteClass.getConstructor().newInstance().asInstanceOf[Suite]
         suite.run(None, Args(collector)).waitUntilCompleted()
-      catch
-        // A suite that cannot even be built tells us nothing about individual tests. Say so on stderr, where it joins
-        // the rest of the run's diagnostics, and let the remaining suites report as usual.
-        case error: Throwable => System.err.println(s"Could not run ${suiteClass.getName}: $error")
+      catch case error: Throwable => collector.recordSuiteFailure(suiteClass.getName, error)
 
     collector.outcomes
 
-  /** The suites compiled into `classesFolder`, ordered by class name so that a solution reports the same way twice. */
+  /** The suites compiled into `classesFolder`, ordered by class name so that a solution reports the same way twice.
+    *
+    * The interface asks for tests in the order the tests file declares them. ScalaTest reports a suite's own tests in
+    * declaration order, which covers every exercise on the track: each ships a single test file holding a single suite.
+    * Across several suites this orders by class name instead, which is at least stable.
+    */
   def suiteClasses(classesFolder: File, loader: ClassLoader): List[Class[?]] =
     classFiles(classesFolder)
       .map(classNameOf(classesFolder, _))
@@ -94,29 +112,63 @@ object TestRun:
     new JSONObject().put("tests", tests)
 
   def writeTestResults(outcomes: List[TestOutcome], testResultsFilePath: String): Unit =
-    val writer = new FileWriter(new File(testResultsFilePath))
-    testResultsJSON(outcomes).write(writer)
-    writer.close()
+    // Serialise before opening the file, so that a failure here leaves no half-written results behind.
+    val json   = testResultsJSON(outcomes)
+    val writer = new FileWriter(new File(testResultsFilePath), UTF_8)
+    try json.write(writer)
+    finally writer.close()
 
   /** Collects test events as they happen, on the thread that ran the test. */
   final class OutcomeCollector extends Reporter:
     private val collected = ListBuffer.empty[TestOutcome]
 
-    def outcomes: List[TestOutcome] = collected.toList
+    // The test a TestStarting has been seen for and no outcome recorded yet, so that a test which dies without
+    // reporting can still be named. Only ever touched from the runner thread, but guarded along with `collected`
+    // because ScalaTest's async suites deliver their events from an execution context of the suite's choosing.
+    private var running = Option.empty[String]
 
-    override def apply(event: Event): Unit = event match
-      case _: TestStarting      => OutputRecorder.startTest()
-      case event: TestSucceeded => record(event.testName, "pass", None)
-      case event: TestFailed    => record(event.testName, "fail", Some(failureMessage(event)))
-      // A pending or cancelled test says nothing about the solution either way, and the interface has no status for
-      // "did not run", so both keep being reported as a pass, as they were when these results came from JUnit XML.
-      case event: TestPending   => record(event.testName, "pass", None)
-      case event: TestCanceled  => record(event.testName, "pass", None)
-      case event: TestIgnored   => collected += TestOutcome(event.testName, "pass", None, None)
-      case _                    => ()
+    def outcomes: List[TestOutcome] = synchronized(collected.toList)
+
+    override def apply(event: Event): Unit = synchronized:
+      event match
+        case event: TestStarting  =>
+          running = Some(event.testName)
+          OutputRecorder.startTest()
+        case event: TestSucceeded => record(event.testName, "pass", None)
+        case event: TestFailed    => record(event.testName, "fail", Some(failureMessage(event)))
+        // A pending or cancelled test says nothing about the solution either way, and the interface has no status for
+        // "did not run", so both keep being reported as a pass, as they were when these results came from JUnit XML.
+        case event: TestPending   => record(event.testName, "pass", None)
+        case event: TestCanceled  => record(event.testName, "pass", None)
+        case event: TestIgnored   => collected += TestOutcome(event.testName, "pass", None, None)
+        case _                    => ()
+
+    /** Records a suite that could not be constructed, or a test that threw something ScalaTest treats as aborting the
+      * run - a `StackOverflowError`, say, which `Engine` rethrows instead of reporting as a failure.
+      *
+      * Neither reaches [[apply]]: `Suite.run` emits no event for them. Without recording them here, a suite that died
+      * halfway would leave a run that looks like a clean pass with the remaining tests quietly missing.
+      */
+    def recordSuiteFailure(suiteName: String, error: Throwable): Unit = synchronized:
+      val cause = error match
+        case invocation: InvocationTargetException if invocation.getCause != null => invocation.getCause
+        case thrown                                                              => thrown
+      // The full trace is no use to a student, but it is exactly what a maintainer needs from the run's log.
+      cause.printStackTrace()
+      collected += TestOutcome(running.getOrElse(suiteName), "error", Some(cause.toString), OutputRecorder.finishTest())
+      running = None
 
     private def record(testName: String, status: String, message: Option[String]): Unit =
       collected += TestOutcome(testName, status, message, OutputRecorder.finishTest())
+      running = None
 
+    // The interface requires a message on every test that did not pass, and ScalaTest can hand us a throwable with
+    // none, so fall through to whatever does carry one.
     private def failureMessage(event: TestFailed): String =
-      event.throwable.flatMap(throwable => Option(throwable.getMessage)).getOrElse(event.message)
+      List(
+        event.throwable.flatMap(throwable => Option(throwable.getMessage)),
+        Some(event.message),
+        event.throwable.map(_.getClass.getName),
+      ).flatten
+        .find(_.trim.nonEmpty)
+        .getOrElse("The test failed without reporting a reason.")

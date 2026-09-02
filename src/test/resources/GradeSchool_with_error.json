@@ -1,0 +1,6 @@
+{
+  "tests": [
+    {"name": "empty school", "status": "pass", "message": null, "output": null},
+    {"name": "add student", "status": "error", "message": "java.lang.StackOverflowError", "output": null}
+  ]
+}

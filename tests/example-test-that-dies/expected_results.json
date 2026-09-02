@@ -1,0 +1,21 @@
+{
+  "tests": [
+    {
+      "output": null,
+      "name": "a test that passes before the trouble starts",
+      "test_code": null,
+      "message": null,
+      "status": "pass"
+    },
+    {
+      "output": null,
+      "name": "a test that overflows the stack",
+      "test_code": null,
+      "message": "java.lang.StackOverflowError",
+      "status": "error"
+    }
+  ],
+  "message": null,
+  "version": 2,
+  "status": "fail"
+}

@@ -109,3 +109,15 @@ class ApplicationSpec extends AnyFunSuite, Matchers:
     val exercismOutput: JSONObject = Application.toExercismJSON(buildLog, resource("/truncated_test_results.json"))
     assert(exercismOutput.getString("status") == "error")
     assert(exercismOutput.getString("message").contains("No test results were produced"))
+
+  test("A test that errored should put the whole run at fail, not pass"):
+    val exercismOutput: JSONObject = Application.toExercismJSON(resource("/outputs/output.txt"), resource("/GradeSchool_with_error.json"))
+
+    // The interface puts the run at "fail" when any test failed OR errored, and reserves "error" for a run where
+    // nothing ran at all.
+    assert(exercismOutput.getString("status") == "fail")
+
+    val testCases = exercismOutput.get("tests").asInstanceOf[Array[JSONObject]]
+    assert(testCases(0).getString("status") == "pass")
+    assert(testCases(1).getString("status") == "error")
+    assert(testCases(1).getString("message") == "java.lang.StackOverflowError")

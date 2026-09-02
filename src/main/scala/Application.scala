@@ -1,5 +1,6 @@
 import org.json.{JSONException, JSONObject}
 import java.io.{File, FileWriter}
+import java.nio.charset.StandardCharsets.UTF_8
 import scala.io.Source
 
 object Application:
@@ -16,12 +17,12 @@ object Application:
     testResultsFilePath: String,
     resultsJsonFilePath: String,
   ): Unit =
-    val resultsJsonFile       = new File(resultsJsonFilePath)
-    val resultsJsonFileWriter = new FileWriter(resultsJsonFile)
-
-    val json = toExercismJSON(buildLogFilePath, testResultsFilePath)
-    json.write(resultsJsonFileWriter)
-    resultsJsonFileWriter.close()
+    // Build the results before opening the file, so that a failure while reading the run's output leaves the previous
+    // results.json alone rather than truncating it to nothing.
+    val json                  = toExercismJSON(buildLogFilePath, testResultsFilePath)
+    val resultsJsonFileWriter = new FileWriter(new File(resultsJsonFilePath), UTF_8)
+    try json.write(resultsJsonFileWriter)
+    finally resultsJsonFileWriter.close()
 
   /** The outcomes [[TestRun]] recorded, or nothing at all when it never got as far as writing them.
     *
@@ -32,7 +33,7 @@ object Application:
     val testResultsFile = new File(testResultsFilePath)
     if !testResultsFile.isFile then List.empty
     else
-      val bufferedSource = Source.fromFile(testResultsFile)
+      val bufferedSource = Source.fromFile(testResultsFile, UTF_8.name)
       val rawContent     = bufferedSource.mkString
       bufferedSource.close
       try
@@ -41,7 +42,7 @@ object Application:
       catch case _: JSONException => List.empty
 
   def readBuildLog(buildLogFilePath: String): String =
-    val fileSource = Source.fromFile(buildLogFilePath)
+    val fileSource = Source.fromFile(buildLogFilePath, UTF_8.name)
     val rawContent = fileSource.mkString
     fileSource.close
     rawContent
@@ -61,6 +62,10 @@ object Application:
     else
       "No test results were produced, so no test cases can be reported. If your solution compiles and its tests run locally, " +
         "please report this at https://github.com/exercism/scala-test-runner/issues"
+
+  // The interface puts a run at "fail" when any test failed or errored, and reserves "error" for a run where nothing
+  // ran at all. Naming the failing statuses keeps that rule readable, and immune to a status the runner never emits.
+  private val FailingStatuses = Set("fail", "error")
 
   def toTestCaseJSON(testResult: JSONObject): JSONObject =
     new JSONObject()
@@ -94,6 +99,6 @@ object Application:
           .put("message", missingTestResultsMessage(buildLogFilePath))
       else
         baseObject
-          .put("status", if testCases.exists(_.getString("status") == "fail") then "fail" else "pass")
+          .put("status", if testCases.exists(testCase => FailingStatuses(testCase.getString("status"))) then "fail" else "pass")
           .put("message", JSONObject.NULL)
           .put("tests", testCases)
