@@ -75,14 +75,31 @@ class ApplicationSpec extends AnyFunSuite, Matchers:
     assert(testCases(5).toString() == """{"output":null,"name":"get students in a non-existent grade","test_code":null,"message":null,"status":"pass"}""")
     assert(testCases(6).toString() == """{"output":null,"name":"sort school","test_code":null,"message":null,"status":"pass"}""")
 
-  test("An xml with a syntax error should be properly reported as JSON"):
+  test("A build log with a syntax error should be properly reported as JSON"):
     val outputFileURL              = getClass.getResource("/outputs/output_error.txt").getPath
-    val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, null)
+    val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, Nil)
     assert(exercismOutput.getInt("version") == 2)
     assert(exercismOutput.getString("status") == "error")
+    assert(exercismOutput.getString("message").contains("Syntax Error: "))
 
-  test("An xml with a syntax error due to an empty file should be properly reported as JSON"):
+  test("A build log with a compile error caused by an empty solution should be properly reported as JSON"):
     val outputFileURL              = getClass.getResource("/outputs/output_empty.txt").getPath
-    val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, null)
+    val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, Nil)
     assert(exercismOutput.getInt("version") == 2)
     assert(exercismOutput.getString("status") == "error")
+    assert(exercismOutput.getString("message").contains("Not Found Error: "))
+
+  test("No test reports and no errors in the build log should be reported as an error"):
+    val outputFileURL              = getClass.getResource("/outputs/output_no_errors.txt").getPath
+    val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, Nil)
+    assert(exercismOutput.getInt("version") == 2)
+    assert(exercismOutput.getString("status") == "error")
+    assert(exercismOutput.getString("message").contains("No test results were produced"))
+
+  test("A test report without a single test case should be reported as an error"):
+    val xmlTestURL                 = getClass.getResource("/GradeSchool_no_test_cases.xml").getPath
+    val outputFileURL              = getClass.getResource("/outputs/output.txt").getPath
+    val exercismOutput: JSONObject = Application.toExercismJSON(outputFileURL, List(new File(xmlTestURL)))
+    assert(exercismOutput.getInt("version") == 2)
+    assert(exercismOutput.getString("status") == "error")
+    assert(exercismOutput.getString("message") == Application.readBuildLog(outputFileURL))

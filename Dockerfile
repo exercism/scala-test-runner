@@ -9,7 +9,9 @@ COPY project/ project/
 COPY src/ src/
 COPY build.sbt build.sbt
 
-RUN sbt assembly
+# `test` shares the sbt launch with `assembly`, so running the unit tests here
+# costs a couple of seconds and no image can be built with a red test suite.
+RUN sbt test assembly
 
 COPY . .
 
