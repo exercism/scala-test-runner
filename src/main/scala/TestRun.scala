@@ -46,7 +46,7 @@ object TestRun:
       case _ =>
         throw new RuntimeException("usage: TestRun <folder with compiled classes> <test results json file>")
 
-  def runSuites(classesFolder: File): List[TestOutcome] =
+  private def runSuites(classesFolder: File): List[TestOutcome] =
     val loader    = new URLClassLoader(Array(classesFolder.toURI.toURL), getClass.getClassLoader)
     val collector = new OutcomeCollector
 
@@ -60,9 +60,9 @@ object TestRun:
 
   /** The suites compiled into `classesFolder`, ordered by class name so that a solution reports the same way twice.
     *
-    * The interface asks for tests in the order the tests file declares them. ScalaTest reports a suite's own tests in
+    * The interface asks for tests in the order the test file declares them. ScalaTest reports a suite's own tests in
     * declaration order, which covers every exercise on the track: each ships a single test file holding a single suite.
-    * Across several suites this orders by class name instead, which is at least stable.
+    * Across several suites these orders by class name instead, which is at least stable.
     */
   def suiteClasses(classesFolder: File, loader: ClassLoader): List[Class[?]] =
     classFiles(classesFolder)
@@ -111,7 +111,7 @@ object TestRun:
       )
     new JSONObject().put("tests", tests)
 
-  def writeTestResults(outcomes: List[TestOutcome], testResultsFilePath: String): Unit =
+  private def writeTestResults(outcomes: List[TestOutcome], testResultsFilePath: String): Unit =
     // Serialise before opening the file, so that a failure here leaves no half-written results behind.
     val json   = testResultsJSON(outcomes)
     val writer = new FileWriter(new File(testResultsFilePath), UTF_8)

@@ -31,7 +31,7 @@ object OutputRecorder:
   // is a far better failure than text that vanishes.
   @volatile private var recording: ByteArrayOutputStream = null
 
-  /** Points standard output at the recording buffer, and returns the stream doing the recording.
+  /** Points standard output at the recording buffer and returns the stream doing the recording.
     *
     * `System.setOut` alone is not enough: `scala.Console` copies the stream it prints to when it is first touched, and
     * Scala's own `println` goes through `Console`. Callers therefore have to wrap the test run in `Console.withOut` on
