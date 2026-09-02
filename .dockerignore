@@ -1,4 +1,5 @@
 .git/
+target/
 .github/
 tests/
 .appends
