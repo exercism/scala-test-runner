@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "empty school",
+      "status": "pass",
+      "message": null,
+      "output": "school is empty\n"
+    },
+    {
+      "name": "add student",
+      "status": "fail",
+      "message": "1 was not 2",
+      "output": "added Aimee to grade 2\n"
+    }
+  ]
+}

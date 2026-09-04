@@ -1,0 +1,46 @@
+{
+  "tests": [
+    {
+      "name": "empty school",
+      "status": "pass",
+      "message": null,
+      "output": null
+    },
+    {
+      "name": "add student",
+      "status": "pass",
+      "message": null,
+      "output": null
+    },
+    {
+      "name": "add more students in same class",
+      "status": "pass",
+      "message": null,
+      "output": null
+    },
+    {
+      "name": "add students to different grades",
+      "status": "pass",
+      "message": null,
+      "output": null
+    },
+    {
+      "name": "get students in a grade",
+      "status": "pass",
+      "message": null,
+      "output": null
+    },
+    {
+      "name": "get students in a non-existent grade",
+      "status": "pass",
+      "message": null,
+      "output": null
+    },
+    {
+      "name": "sort school",
+      "status": "pass",
+      "message": null,
+      "output": null
+    }
+  ]
+}
