@@ -23,4 +23,11 @@ ENV PATH="/opt/scala/bin:${PATH}"
 COPY --from=builder /build/target/scala-3.4.2/TestRunner-assembly-0.1.0-SNAPSHOT.jar ./target/scala-3.4.2/
 COPY bin/ bin/
 
+# Dump the class data sharing archives bin/run.sh starts its JVMs with. This
+# does a throwaway run to collect them, so it has to come last: an archive is
+# tied to the timestamp of every jar it was dumped against, and a later step
+# that rewrote the assembly jar would leave the JVM quietly ignoring the
+# archive. bin/warmup.sh checks its own work, so such a mistake fails the build.
+RUN bin/warmup.sh
+
 ENTRYPOINT ["/opt/test-runner/bin/run.sh"]
