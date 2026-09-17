@@ -1,4 +1,8 @@
-FROM sbtscala/scala-sbt:eclipse-temurin-jammy-22_36_1.10.1_3.4.2@sha256:40040a00d0eb6e3f293fcc41c7a4df6ffe301cfc60af203aab26ed7349b5cabc AS builder
+# A "light" image: sbt is installed, nothing is warmed. Every warmed variant
+# names a Scala version in its tag and none of them names 3.9.0 yet, but sbt
+# resolves `scalaVersion` from build.sbt either way - the warmed compiler would
+# go unused, and the tag would be one more thing to re-pin at the next bump.
+FROM sbtscala/scala-sbt:eclipse-temurin-25.0.4_7_1.x@sha256:064dec0f2ade632861c31eb1e88e5e0ebd967009ff3c3d22a5b0ebe46bc3bb77 AS builder
 
 WORKDIR /build
 
@@ -10,13 +14,18 @@ COPY build.sbt build.sbt
 # costs a couple of seconds and no image can be built with a red test suite.
 RUN sbt test assembly
 
-FROM eclipse-temurin:22.0.2_9-jdk-alpine@sha256:f412633b75c929e68fd83d36a3abd9104c778161b987e5088eab645b0e5af3f6 AS runner
+FROM eclipse-temurin:25.0.4_7-jdk-alpine@sha256:09349d79941fd53bb3d487b393ca118d8853c08c09193f416fe6a8718df9e732 AS runner
+
+# The compiler every solution is built with. build.sbt pins the same version for
+# the runner's own jar, and the two are read by different tools, so they are
+# spelled out separately - but nothing else in the image repeats either of them.
+ARG SCALA_VERSION=3.9.0
 
 WORKDIR /opt/test-runner
 
 RUN apk add --no-cache bash jq wget coreutils diffutils sed 
-ADD --unpack=true https://github.com/lampepfl/dotty/releases/download/3.4.2/scala3-3.4.2.tar.gz /opt/
-RUN ln -s /opt/scala3-3.4.2 /opt/scala
+ADD --unpack=true https://github.com/scala/scala3/releases/download/${SCALA_VERSION}/scala3-${SCALA_VERSION}.tar.gz /opt/
+RUN ln -s "/opt/scala3-${SCALA_VERSION}" /opt/scala
 
 ENV PATH="/opt/scala/bin:${PATH}"
 
