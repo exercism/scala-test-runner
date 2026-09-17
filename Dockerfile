@@ -20,7 +20,10 @@ RUN ln -s /opt/scala3-3.4.2 /opt/scala
 
 ENV PATH="/opt/scala/bin:${PATH}"
 
-COPY --from=builder /build/target/scala-3.4.2/TestRunner-assembly-0.1.0-SNAPSHOT.jar ./target/scala-3.4.2/
+# Named after neither the Scala version nor its own: one jar under one name the
+# scripts keep across a version bump. Were the glob to match anything but the
+# assembly jar, the build would stop here rather than ship a wrong classpath.
+COPY --from=builder /build/target/scala-*/TestRunner-assembly-*.jar ./target/test-runner.jar
 COPY bin/ bin/
 
 # Dump the class data sharing archives bin/run.sh starts its JVMs with. This

@@ -22,7 +22,7 @@
 
 set -euo pipefail
 
-test_runner_jar=/opt/test-runner/target/scala-3.4.2/TestRunner-assembly-0.1.0-SNAPSHOT.jar
+test_runner_jar=/opt/test-runner/target/test-runner.jar
 cds_dir=/opt/test-runner/cds
 
 workdir=/tmp/warmup

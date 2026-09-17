@@ -25,7 +25,7 @@ slug="$1"
 input_dir="${2%/}"
 output_dir="${3%/}"
 
-test_runner_jar=/opt/test-runner/target/scala-3.4.2/TestRunner-assembly-0.1.0-SNAPSHOT.jar
+test_runner_jar=/opt/test-runner/target/test-runner.jar
 
 # Class data sharing archives, dumped into the image by bin/warmup.sh. They hold
 # the compiler's and the runner's classes ready to be memory-mapped, which is
