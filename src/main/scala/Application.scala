@@ -73,7 +73,7 @@ object Application:
       .put("status", testResult.getString("status"))
       .put("message", orNull(testResult, "message"))
       .put("output", orNull(testResult, "output"))
-      .put("test_code", JSONObject.NULL)
+      .put("test_code", orNull(testResult, "test_code"))
 
   // A missing key and an explicitly null one mean the same thing here, and `put` drops a key given a Java null.
   private def orNull(testResult: JSONObject, key: String): Object =

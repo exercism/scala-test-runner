@@ -1,0 +1,18 @@
+{
+  "tests": [
+    {
+      "name": "empty school",
+      "status": "pass",
+      "message": null,
+      "output": null,
+      "test_code": "new School().db should be (Map())"
+    },
+    {
+      "name": "add student",
+      "status": "fail",
+      "message": "1 was not 2",
+      "output": null,
+      "test_code": "val school = new School()\nschool.add(\"Aimee\", 2)\nschool.db should be (Map(2 -> Seq(\"Aimee\")))"
+    }
+  ]
+}

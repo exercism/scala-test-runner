@@ -1,5 +1,15 @@
 import org.json.{JSONArray, JSONObject}
-import org.scalatest.events.{Event, TestCanceled, TestFailed, TestIgnored, TestPending, TestStarting, TestSucceeded}
+import org.scalatest.events.{
+  Event,
+  LineInFile,
+  Location,
+  TestCanceled,
+  TestFailed,
+  TestIgnored,
+  TestPending,
+  TestStarting,
+  TestSucceeded,
+}
 import org.scalatest.{Args, DoNotDiscover, Reporter, Suite}
 
 import java.io.{File, FileWriter}
@@ -8,8 +18,19 @@ import java.net.URLClassLoader
 import java.nio.charset.StandardCharsets.UTF_8
 import scala.collection.mutable.ListBuffer
 
-/** What a single test did, before it is shaped into the exercism format by [[Application]]. */
-case class TestOutcome(name: String, status: String, message: Option[String], output: Option[String])
+/** What a single test did, before it is shaped into the exercism format by [[Application]].
+  *
+  * `location` is where the test is declared, which [[TestSource]] needs to read back the code it ran; it is dropped
+  * once `testCode` has been filled in from it.
+  */
+case class TestOutcome(
+  name: String,
+  status: String,
+  message: Option[String],
+  output: Option[String],
+  location: Option[TestLocation] = None,
+  testCode: Option[String] = None,
+)
 
 /** Runs a solution's ScalaTest suites and records what each test reported and printed.
   *
@@ -37,14 +58,16 @@ object TestRun:
 
   private def run(args: Array[String]): Unit =
     args match
-      case Array(classesFolderPath, testResultsFilePath) =>
+      case Array(classesFolderPath, testResultsFilePath, testSourcesFolderPath) =>
         val classesFolder = new File(classesFolderPath)
         if !classesFolder.isDirectory then throw new RuntimeException(s"Expected $classesFolderPath to be a folder")
         val recording = OutputRecorder.install()
         val outcomes  = Console.withOut(recording)(runSuites(classesFolder))
-        writeTestResults(outcomes, testResultsFilePath)
+        writeTestResults(TestSource.addTestCode(outcomes, new File(testSourcesFolderPath)), testResultsFilePath)
       case _ =>
-        throw new RuntimeException("usage: TestRun <folder with compiled classes> <test results json file>")
+        throw new RuntimeException(
+          "usage: TestRun <folder with compiled classes> <test results json file> <folder with test sources>",
+        )
 
   private def runSuites(classesFolder: File): List[TestOutcome] =
     val loader    = new URLClassLoader(Array(classesFolder.toURI.toURL), getClass.getClassLoader)
@@ -107,7 +130,8 @@ object TestRun:
           .put("name", outcome.name)
           .put("status", outcome.status)
           .put("message", outcome.message.getOrElse(JSONObject.NULL))
-          .put("output", outcome.output.getOrElse(JSONObject.NULL)),
+          .put("output", outcome.output.getOrElse(JSONObject.NULL))
+          .put("test_code", outcome.testCode.getOrElse(JSONObject.NULL)),
       )
     new JSONObject().put("tests", tests)
 
@@ -127,12 +151,17 @@ object TestRun:
     // because ScalaTest's async suites deliver their events from an execution context of the suite's choosing.
     private var running = Option.empty[String]
 
+    // Where that test is declared. Only TestStarting carries it: the event ending a failed test points at the throwable
+    // that failed it instead, which says nothing about where the test itself was written.
+    private var declaredAt = Option.empty[TestLocation]
+
     def outcomes: List[TestOutcome] = synchronized(collected.toList)
 
     override def apply(event: Event): Unit = synchronized:
       event match
         case event: TestStarting  =>
           running = Some(event.testName)
+          declaredAt = locationOf(event.location)
           OutputRecorder.startTest()
         case event: TestSucceeded => record(event.testName, "pass", None)
         case event: TestFailed    => record(event.testName, "fail", Some(failureMessage(event)))
@@ -140,7 +169,9 @@ object TestRun:
         // "did not run", so both keep being reported as a pass, as they were when these results came from JUnit XML.
         case event: TestPending   => record(event.testName, "pass", None)
         case event: TestCanceled  => record(event.testName, "pass", None)
-        case event: TestIgnored   => collected += TestOutcome(event.testName, "pass", None, None)
+        // An ignored test never starts, so this is the only event naming it - and the only place its location comes from.
+        case event: TestIgnored   =>
+          collected += TestOutcome(event.testName, "pass", None, None, locationOf(event.location))
         case _                    => ()
 
     /** Records a suite that could not be constructed, or a test that threw something ScalaTest treats as aborting the
@@ -155,12 +186,25 @@ object TestRun:
         case thrown                                                              => thrown
       // The full trace is no use to a student, but it is exactly what a maintainer needs from the run's log.
       cause.printStackTrace()
-      collected += TestOutcome(running.getOrElse(suiteName), "error", Some(cause.toString), OutputRecorder.finishTest())
+      collected += TestOutcome(
+        running.getOrElse(suiteName),
+        "error",
+        Some(cause.toString),
+        OutputRecorder.finishTest(),
+        declaredAt,
+      )
       running = None
+      declaredAt = None
 
     private def record(testName: String, status: String, message: Option[String]): Unit =
-      collected += TestOutcome(testName, status, message, OutputRecorder.finishTest())
+      collected += TestOutcome(testName, status, message, OutputRecorder.finishTest(), declaredAt)
       running = None
+      declaredAt = None
+
+    // Anywhere else a location can point - at a class, or at the stack depth of an exception - says nothing about where
+    // the test was written, and leaves the test reporting no code.
+    private def locationOf(location: Option[Location]): Option[TestLocation] =
+      location.collect { case LineInFile(lineNumber, fileName, _) => TestLocation(fileName, lineNumber) }
 
     // The interface requires a message on every test that did not pass, and ScalaTest can hand us a throwable with
     // none, so fall through to whatever does carry one.

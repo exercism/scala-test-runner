@@ -3,7 +3,7 @@
     {
       "output": null,
       "name": "a passing test that leaves a thread running behind it",
-      "test_code": null,
+      "test_code": "Sheep.count(3) should be (3)",
       "message": null,
       "status": "pass"
     }

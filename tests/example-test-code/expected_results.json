@@ -1,0 +1,35 @@
+{
+  "tests": [
+    {
+      "output": null,
+      "name": "should report the code of a test written as a flat spec",
+      "test_code": "Brackets.isPaired(\"[]\") should be (true)",
+      "message": null,
+      "status": "pass"
+    },
+    {
+      "output": null,
+      "name": "a string of brackets is paired when it holds none at all",
+      "test_code": "Brackets.isPaired(\"\") should be (true)",
+      "message": null,
+      "status": "pass"
+    },
+    {
+      "output": null,
+      "name": "a brace in the code a test ran is reported with it",
+      "test_code": "Brackets.isPaired(\"([{}])\") should be (true)",
+      "message": null,
+      "status": "pass"
+    },
+    {
+      "output": null,
+      "name": "so is a brace the test only mentions",
+      "test_code": "// a } here, and a { there\nBrackets.isPaired(\"{ ]\") should be (false)",
+      "message": null,
+      "status": "pass"
+    }
+  ],
+  "message": null,
+  "version": 2,
+  "status": "pass"
+}

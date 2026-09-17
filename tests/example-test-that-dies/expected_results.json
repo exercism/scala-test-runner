@@ -3,14 +3,14 @@
     {
       "output": null,
       "name": "a test that passes before the trouble starts",
-      "test_code": null,
+      "test_code": "Sheep.name should be (\"Dolly\")",
       "message": null,
       "status": "pass"
     },
     {
       "output": null,
       "name": "a test that overflows the stack",
-      "test_code": null,
+      "test_code": "Sheep.count(0) should be (3)",
       "message": "java.lang.StackOverflowError",
       "status": "error"
     }

@@ -3,28 +3,28 @@
     {
       "output": "counted 3 sheep\n",
       "name": "what a passing test prints is reported",
-      "test_code": null,
+      "test_code": "println(\"counted 3 sheep\")\nSheep.count(3) should be (3)",
       "message": null,
       "status": "pass"
     },
     {
       "output": "about to miscount\n",
       "name": "what a failing test prints is reported",
-      "test_code": null,
+      "test_code": "println(\"about to miscount\")\nSheep.count(2) should be (3)",
       "message": "2 was not equal to 3",
       "status": "fail"
     },
     {
       "output": null,
       "name": "a test that prints nothing has no output",
-      "test_code": null,
+      "test_code": "Sheep.count(1) should be (1)",
       "message": null,
       "status": "pass"
     },
     {
       "output": "sheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsheepsh\nOutput was truncated. Please limit to 500 chars",
       "name": "output too long for the interface is truncated",
-      "test_code": null,
+      "test_code": "println(\"sheep\" * 120)\nSheep.count(0) should be (0)",
       "message": null,
       "status": "pass"
     }

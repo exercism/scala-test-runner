@@ -79,6 +79,23 @@ class ApplicationSpec extends AnyFunSuite, Matchers:
     assert(testCases(1).getString("output") == "added Aimee to grade 2\n")
     assert(testCases(1).getString("message") == "1 was not 2")
 
+  test("The code a test ran should be reported as its test_code"):
+    val exercismOutput: JSONObject = Application.toExercismJSON(resource("/outputs/output_fail.txt"), resource("/GradeSchool_with_test_code.json"))
+
+    val testCases = exercismOutput.get("tests").asInstanceOf[Array[JSONObject]]
+    assert(testCases.length == 2)
+    assert(testCases(0).getString("test_code") == "new School().db should be (Map())")
+    assert(testCases(1).getString("test_code").linesIterator.toList.last == """school.db should be (Map(2 -> Seq("Aimee")))""")
+
+  // A test whose code could not be read - a body written in a shape TestRun does not recognise - is still reported,
+  // with the key present and null, as the interface has it.
+  test("A test the code of which could not be read should be reported without it"):
+    val exercismOutput: JSONObject = Application.toExercismJSON(resource("/outputs/output.txt"), resource("/HelloWorld_successful.json"))
+
+    val testCases = exercismOutput.get("tests").asInstanceOf[Array[JSONObject]]
+    assert(testCases(0).has("test_code"))
+    assert(testCases(0).isNull("test_code"))
+
   test("A build log with a syntax error should be properly reported as JSON"):
     val exercismOutput: JSONObject = Application.toExercismJSON(resource("/outputs/output_error.txt"), missingTestResults)
     assert(exercismOutput.getInt("version") == 2)
