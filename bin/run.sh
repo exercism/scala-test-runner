@@ -36,6 +36,7 @@ runner_archive=/opt/test-runner/cds/runner.jsa
 
 workdir=/tmp/exercise
 workdir_target="${workdir}/target"
+workdir_test_sources="${workdir}/src/test/scala"
 test_results_file="${workdir}/test-results.json"
 
 results_file="${output_dir}/results.json"
@@ -70,9 +71,10 @@ scalac -J-XX:SharedArchiveFile="${scalac_archive}" -J-XX:TieredStopAtLevel=1 \
     -classpath "${test_runner_jar}" -d "${workdir_target}" \
     "${workdir}"/src/main/scala/* "${workdir}"/src/test/scala/* &> "${build_log_file}"
 
-# run tests, recording what each test reported and printed
+# run tests, recording what each test reported, printed, and ran to check it.
+# The test sources are read back for that last one, so they are passed along.
 java -XX:SharedArchiveFile="${runner_archive}" \
-    -classpath "${test_runner_jar}" TestRun "${workdir_target}" "${test_results_file}"
+    -classpath "${test_runner_jar}" TestRun "${workdir_target}" "${test_results_file}" "${workdir_test_sources}"
 
 # Write the results.json file in the exercism format
 java -XX:SharedArchiveFile="${runner_archive}" -XX:TieredStopAtLevel=1 \

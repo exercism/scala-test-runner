@@ -3,7 +3,7 @@
     {
       "output": null,
       "name": "a solution that throws without a message still reports a failure",
-      "test_code": null,
+      "test_code": "Stub.answer() should be (42)",
       "message": "java.lang.UnsupportedOperationException was thrown.",
       "status": "fail"
     }

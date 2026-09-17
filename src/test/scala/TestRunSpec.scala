@@ -167,13 +167,15 @@ class TestRunSpec extends AnyFunSuite, Matchers:
 
   test("Recorded outcomes should be written as JSON the runner can read back"):
     val outcomes = List(
-      TestOutcome("prints then passes", "pass", None, Some("counted 3 sheep\n")),
+      TestOutcome("prints then passes", "pass", None, Some("counted 3 sheep\n"), testCode = Some("count(3)")),
       TestOutcome("prints then fails", "fail", Some("2 was not 3"), None),
     )
     val tests    = TestRun.testResultsJSON(outcomes).getJSONArray("tests")
 
     assert(tests.length == 2)
     assert(tests.getJSONObject(0).getString("output") == "counted 3 sheep\n")
+    assert(tests.getJSONObject(0).getString("test_code") == "count(3)")
     assert(tests.getJSONObject(0).isNull("message"))
     assert(tests.getJSONObject(1).getString("message") == "2 was not 3")
     assert(tests.getJSONObject(1).isNull("output"))
+    assert(tests.getJSONObject(1).isNull("test_code"))

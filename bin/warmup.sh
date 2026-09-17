@@ -63,7 +63,8 @@ scalac -J-XX:ArchiveClassesAtExit="${cds_dir}/scalac.jsa" \
 
 echo "warmup: dumping ${cds_dir}/runner.jsa"
 java -XX:ArchiveClassesAtExit="${cds_dir}/runner.jsa" \
-    -classpath "${test_runner_jar}" TestRun "${workdir_target}" "${workdir}/test-results.json"
+    -classpath "${test_runner_jar}" TestRun "${workdir_target}" "${workdir}/test-results.json" \
+    "${workdir}/src/test/scala"
 
 # An archive the JVM cannot use is ignored rather than reported: the run simply
 # goes back to being slow, which is not the sort of thing anyone notices in a
@@ -76,7 +77,8 @@ scalac -J-Xshare:on -J-XX:SharedArchiveFile="${cds_dir}/scalac.jsa" \
     -classpath "${test_runner_jar}" -d "${workdir_target}" \
     "${workdir}"/src/main/scala/* "${workdir}"/src/test/scala/*
 java -Xshare:on -XX:SharedArchiveFile="${cds_dir}/runner.jsa" \
-    -classpath "${test_runner_jar}" TestRun "${workdir_target}" "${workdir}/test-results.json"
+    -classpath "${test_runner_jar}" TestRun "${workdir_target}" "${workdir}/test-results.json" \
+    "${workdir}/src/test/scala"
 java -Xshare:on -XX:SharedArchiveFile="${cds_dir}/runner.jsa" \
     -jar "${test_runner_jar}" /dev/null "${workdir}/test-results.json" "${workdir}/results.json"
 
