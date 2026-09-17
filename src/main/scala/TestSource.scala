@@ -16,8 +16,9 @@ case class TestLocation(fileName: String, lineNumber: Int)
   *
   * A location carries a line and nothing finer: no column, and no file path unless scalactic was built with
   * `SCALACTIC_FILL_FILE_PATHNAMES`, which it is not. A declaration is therefore read from the start of its line up to
-  * the start of the next test's line in the same file, and files are found by name under the folder holding the
-  * solution's tests. Bounding each declaration that way keeps one this cannot make sense of from swallowing the test
+  * the start of the next test's line in the same file, and files are found under the folder holding the solution's
+  * tests by the plain name the location reports, which names one file only while `bin/run.sh` compiles a single flat
+  * folder of them. Bounding each declaration that way keeps one this cannot make sense of from swallowing the test
   * below it: it reports no code at all instead.
   */
 object TestSource:
@@ -61,37 +62,52 @@ object TestSource:
       .toMap
 
   /** The body of the test whose declaration starts at `from`, as the student wrote it, indentation removed. */
-  def testCodeIn(source: String, from: Int, until: Int): Option[String] =
+  private def testCodeIn(source: String, from: Int, until: Int): Option[String] =
     blockOpener(source, from, until)
       .flatMap: opener =>
-        if source.charAt(opener) == '{' then bracedBody(source, opener)
-        else indentedBody(source, from, opener)
+        if source.charAt(opener) == '{' then bracedBody(source, opener, until)
+        else indentedBody(source, from, opener, until)
       .map(dedent)
       .filter(_.nonEmpty)
 
   /** Where the test's body begins: the brace of `test("...") { ... }`, or the colon Scala 3 opens a block with.
     *
-    * Whichever comes first within the declaration wins. A test given its body some other way - as an ordinary argument,
-    * or by a helper method - opens no block here, and is reported without code.
+    * Whichever comes first wins, and only within the declaration itself: the search gives up at the first line ending
+    * with the declaration's own brackets balanced, which is where a declaration that opened no block has ended. A test
+    * handed its body some other way - `test(name)(body)`, or a helper that builds it - is reported without code rather
+    * than with whatever the next block in the file happens to hold.
+    *
+    * A declaration written over several lines keeps its brackets open across them, which is what tells the two apart.
     */
-  @tailrec
-  private def blockOpener(source: String, index: Int, until: Int): Option[Int] =
-    if index >= until then None
-    else
-      val afterOpaque = skipOpaque(source, index)
-      if afterOpaque > index then blockOpener(source, afterOpaque, until)
-      else if source.charAt(index) == '{' || opensIndentedBlock(source, index) then Some(index)
-      else blockOpener(source, index + 1, until)
+  private def blockOpener(source: String, from: Int, until: Int): Option[Int] =
+    @tailrec
+    def opener(index: Int, depth: Int): Option[Int] =
+      if index >= until then None
+      else
+        val afterOpaque = skipOpaque(source, index)
+        if afterOpaque > index then opener(afterOpaque, depth)
+        else if source.charAt(index) == '{' || opensIndentedBlock(source, index) then Some(index)
+        else
+          source.charAt(index) match
+            case '(' | '['          => opener(index + 1, depth + 1)
+            case ')' | ']'          => opener(index + 1, depth - 1)
+            case '\n' if depth <= 0 => None
+            case _                  => opener(index + 1, depth)
+
+    opener(from, 0)
 
   /** Whether the colon at `index` is the one that opens an indented block, rather than part of anything else. */
   private def opensIndentedBlock(source: String, index: Int): Boolean =
     source.charAt(index) == ':' && (index + 1 until endOfLine(source, index)).forall(source.charAt(_).isWhitespace)
 
-  /** The text between the brace at `open` and the one closing it, or nothing when the source never closes it. */
-  private def bracedBody(source: String, open: Int): Option[String] =
+  /** The text between the brace at `open` and the one closing it, or nothing when it does not close within `until`.
+    *
+    * A test's body always closes before the next test is declared, so a brace still open there was never a body.
+    */
+  private def bracedBody(source: String, open: Int, until: Int): Option[String] =
     @tailrec
     def closingBrace(index: Int, depth: Int): Option[Int] =
-      if index >= source.length then None
+      if index >= until then None
       else
         val afterOpaque = skipOpaque(source, index)
         if afterOpaque > index then closingBrace(afterOpaque, depth)
@@ -105,12 +121,12 @@ object TestSource:
     closingBrace(open + 1, 1).map(source.substring(open + 1, _))
 
   /** The lines below the colon at `opener` that the declaration starting at `from` indented further than itself. */
-  private def indentedBody(source: String, from: Int, opener: Int): Option[String] =
+  private def indentedBody(source: String, from: Int, opener: Int, until: Int): Option[String] =
     val declarationIndent = indentOf(source.substring(from).takeWhile(_ != '\n'))
     val afterColonLine    = source.indexOf('\n', opener)
-    Option.when(afterColonLine >= 0):
+    Option.when(afterColonLine >= 0 && afterColonLine + 1 <= until):
       source
-        .substring(afterColonLine + 1)
+        .substring(afterColonLine + 1, until)
         .linesIterator
         .takeWhile(line => line.isBlank || indentOf(line) > declarationIndent)
         .mkString("\n")
@@ -188,7 +204,9 @@ object TestSource:
     */
   private def endOfCharLiteral(source: String, index: Int): Int =
     if source.startsWith("\\", index + 1) then
-      source.indexOf('\'', index + 2) match
+      // From past the escaped character: searching from the backslash would find the quote `'\''` escapes and leave the
+      // real closing one behind, to be read as the start of something else.
+      source.indexOf('\'', index + 3) match
         case -1    => index + 1
         case close => close + 1
     else if index + 2 < source.length && source.charAt(index + 2) == '\'' then index + 3

@@ -165,6 +165,45 @@ class TestSourceSpec extends AnyFunSuite, Matchers:
 
     testCode(source, 1, 3) should be(Map(3 -> "Leap.leapYear(1900) should be (false)"))
 
+  test("A test that opens no block should not be given one opened by whatever follows it"):
+    val source =
+      """|  test("given its body as an argument")(Leap.leapYear(2000) should be (true))
+         |
+         |  private def twice(year: Int) = {
+         |    Leap.leapYear(year) && Leap.leapYear(year)
+         |  }
+         |
+         |  test("the test below it") {
+         |    Leap.leapYear(1900) should be (false)
+         |  }
+         |""".stripMargin
+
+    testCode(source, 1, 7) should be(Map(7 -> "Leap.leapYear(1900) should be (false)"))
+
+  // The brace the suite itself closes with would otherwise let an unclosed body balance, and swallow every test
+  // declared between the two.
+  test("A body that is never closed should not be reported as the test below it"):
+    val source =
+      """|  test("an unclosed body") {
+         |    Leap.leapYear(2000) should be (true)
+         |
+         |  test("the test below it") {
+         |    Leap.leapYear(1900) should be (false)
+         |  }
+         |}
+         |""".stripMargin
+
+    testCode(source, 1, 4) should be(Map(4 -> "Leap.leapYear(1900) should be (false)"))
+
+  test("An escaped quote should not leave the closing one behind to open something else"):
+    val source =
+      """|  test("the quote character") {
+         |    Brackets.quotes should be (List('\'','}'))
+         |  }
+         |""".stripMargin
+
+    onlyTestCode(source) should be(Some("""Brackets.quotes should be (List('\'','}'))"""))
+
   test("A body that is never closed should be reported as no code rather than as the rest of the file"):
     val source =
       """|  test("an unclosed body") {

@@ -20,8 +20,8 @@ import scala.collection.mutable.ListBuffer
 
 /** What a single test did, before it is shaped into the exercism format by [[Application]].
   *
-  * `location` is where the test is declared, which [[TestSource]] needs to read back the code it ran; it is dropped
-  * once `testCode` has been filled in from it.
+  * `location` is where the test is declared, which [[TestSource]] needs to read back the code it ran. It is never
+  * reported: only `testCode`, filled in from it once the run is over, reaches results.json.
   */
 case class TestOutcome(
   name: String,
