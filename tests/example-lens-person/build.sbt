@@ -1,9 +1,9 @@
-scalaVersion := "2.13.6"
+scalaVersion := "3.9.0"
 
-val monocleVersion = "2.0.0"
+val monocleVersion = "3.2.0"
 
 libraryDependencies ++= Seq(
-  "com.github.julien-truffaut" %%  "monocle-core"  % monocleVersion,
-  "com.github.julien-truffaut" %%  "monocle-macro" % monocleVersion,
-  "org.scalatest" %% "scalatest" % "3.2.10" % "test"
+  "dev.optics" %%  "monocle-core"  % monocleVersion,
+  "dev.optics" %%  "monocle-macro" % monocleVersion,
+  "org.scalatest" %% "scalatest" % "3.2.19" % Test
 )

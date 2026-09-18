@@ -25,7 +25,7 @@ slug="$1"
 input_dir="${2%/}"
 output_dir="${3%/}"
 
-test_runner_jar=/opt/test-runner/target/scala-3.4.2/TestRunner-assembly-0.1.0-SNAPSHOT.jar
+test_runner_jar=/opt/test-runner/target/test-runner.jar
 
 # Class data sharing archives, dumped into the image by bin/warmup.sh. They hold
 # the compiler's and the runner's classes ready to be memory-mapped, which is
@@ -33,6 +33,14 @@ test_runner_jar=/opt/test-runner/target/scala-3.4.2/TestRunner-assembly-0.1.0-SN
 # stop matching, the JVM ignores it and the run is merely slow again.
 scalac_archive=/opt/test-runner/cds/scalac.jsa
 runner_archive=/opt/test-runner/cds/runner.jsa
+
+# ScalaTest's lazy vals were compiled against the old `scala.runtime.LazyVals`
+# API, which reaches for `sun.misc.Unsafe`; on JDK 24 and later every JVM that
+# loads them prints four lines about it. The lines land wherever the run's
+# output is going - the console, or `build.log`, which is read back as the
+# message of a failed compile - so they are turned off rather than filtered out.
+# Nothing here can fix the call itself short of a ScalaTest built on Scala 3.9.
+unsafe_warning_off=--sun-misc-unsafe-memory-access=allow
 
 workdir=/tmp/exercise
 workdir_target="${workdir}/target"
@@ -68,16 +76,17 @@ sed -i 's/pending//g' "${workdir}"/src/test/scala/*
 # that is the one JVM here running a student's own code, which may well hold a
 # loop worth optimising.
 scalac -J-XX:SharedArchiveFile="${scalac_archive}" -J-XX:TieredStopAtLevel=1 \
+    "-J${unsafe_warning_off}" \
     -classpath "${test_runner_jar}" -d "${workdir_target}" \
     "${workdir}"/src/main/scala/* "${workdir}"/src/test/scala/* &> "${build_log_file}"
 
 # run tests, recording what each test reported, printed, and ran to check it.
 # The test sources are read back for that last one, so they are passed along.
-java -XX:SharedArchiveFile="${runner_archive}" \
+java -XX:SharedArchiveFile="${runner_archive}" "${unsafe_warning_off}" \
     -classpath "${test_runner_jar}" TestRun "${workdir_target}" "${test_results_file}" "${workdir_test_sources}"
 
 # Write the results.json file in the exercism format
-java -XX:SharedArchiveFile="${runner_archive}" -XX:TieredStopAtLevel=1 \
+java -XX:SharedArchiveFile="${runner_archive}" -XX:TieredStopAtLevel=1 "${unsafe_warning_off}" \
     -jar "${test_runner_jar}" "${build_log_file}" "${test_results_file}" "${results_file}" &> "${runner_log_file}"
 
 # change workdir back to the original input_dir in the final results file

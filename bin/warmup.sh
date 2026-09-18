@@ -22,7 +22,9 @@
 
 set -euo pipefail
 
-test_runner_jar=/opt/test-runner/target/scala-3.4.2/TestRunner-assembly-0.1.0-SNAPSHOT.jar
+test_runner_jar=/opt/test-runner/target/test-runner.jar
+# Dumped and verified under the same flag bin/run.sh runs with; see there.
+unsafe_warning_off=--sun-misc-unsafe-memory-access=allow
 cds_dir=/opt/test-runner/cds
 
 workdir=/tmp/warmup
@@ -57,12 +59,12 @@ class WarmupTest extends AnyFunSuite with Matchers {
 SCALA
 
 echo "warmup: dumping ${cds_dir}/scalac.jsa"
-scalac -J-XX:ArchiveClassesAtExit="${cds_dir}/scalac.jsa" \
+scalac -J-XX:ArchiveClassesAtExit="${cds_dir}/scalac.jsa" "-J${unsafe_warning_off}" \
     -classpath "${test_runner_jar}" -d "${workdir_target}" \
     "${workdir}"/src/main/scala/* "${workdir}"/src/test/scala/*
 
 echo "warmup: dumping ${cds_dir}/runner.jsa"
-java -XX:ArchiveClassesAtExit="${cds_dir}/runner.jsa" \
+java -XX:ArchiveClassesAtExit="${cds_dir}/runner.jsa" "${unsafe_warning_off}" \
     -classpath "${test_runner_jar}" TestRun "${workdir_target}" "${workdir}/test-results.json" \
     "${workdir}/src/test/scala"
 
@@ -73,13 +75,13 @@ java -XX:ArchiveClassesAtExit="${cds_dir}/runner.jsa" \
 # instead of quietly costing every run a second. bin/run.sh itself leaves the
 # default `-Xshare:auto` in place, where a bad archive only costs speed.
 echo "warmup: verifying the archives are usable"
-scalac -J-Xshare:on -J-XX:SharedArchiveFile="${cds_dir}/scalac.jsa" \
+scalac -J-Xshare:on -J-XX:SharedArchiveFile="${cds_dir}/scalac.jsa" "-J${unsafe_warning_off}" \
     -classpath "${test_runner_jar}" -d "${workdir_target}" \
     "${workdir}"/src/main/scala/* "${workdir}"/src/test/scala/*
-java -Xshare:on -XX:SharedArchiveFile="${cds_dir}/runner.jsa" \
+java -Xshare:on -XX:SharedArchiveFile="${cds_dir}/runner.jsa" "${unsafe_warning_off}" \
     -classpath "${test_runner_jar}" TestRun "${workdir_target}" "${workdir}/test-results.json" \
     "${workdir}/src/test/scala"
-java -Xshare:on -XX:SharedArchiveFile="${cds_dir}/runner.jsa" \
+java -Xshare:on -XX:SharedArchiveFile="${cds_dir}/runner.jsa" "${unsafe_warning_off}" \
     -jar "${test_runner_jar}" /dev/null "${workdir}/test-results.json" "${workdir}/results.json"
 
 rm -rf "${workdir}"
