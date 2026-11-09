@@ -1,7 +1,7 @@
 import sbt._
 
 object Dependencies {
-  lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.2.19"
+  lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.2.20"
   lazy val scalaCheck = "org.scalatestplus" %% "scalacheck-1-18" % "3.2.19.0"
 
   val monocleVersion = "3.2.0"
@@ -14,5 +14,5 @@ object Dependencies {
   lazy val json = "org.json" % "json" % "20260814"
 
   lazy val parserCombinators =
-    "org.scala-lang.modules" %% "scala-parser-combinators" % "2.4.0"
+    "org.scala-lang.modules" %% "scala-parser-combinators" % "2.5.0"
 }
