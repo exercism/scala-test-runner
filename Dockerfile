@@ -14,7 +14,7 @@ COPY build.sbt build.sbt
 # costs a couple of seconds and no image can be built with a red test suite.
 RUN sbt test assembly
 
-FROM eclipse-temurin:25.0.4_7-jdk-alpine@sha256:09349d79941fd53bb3d487b393ca118d8853c08c09193f416fe6a8718df9e732 AS runner
+FROM eclipse-temurin:27_35-jdk-alpine@sha256:8b32b7f44f8752d9aaa0a58d2fb8d679aa719083f8f0c2d9bd90eb35f2fc149d AS runner
 
 # The compiler every solution is built with. build.sbt pins the same version for
 # the runner's own jar, and the two are read by different tools, so they are
