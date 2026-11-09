@@ -6,44 +6,47 @@ updates:
   # solution is compiled against, plus sbt plugins and sbt itself.
   # These versions are the source of truth for the Scala track: after a bump lands
   # here, the exercises' build.sbt files in exercism/scala must be updated to match.
-  - package-ecosystem: 'sbt'
-    directory: '/'
+  - package-ecosystem: sbt
+    directory: /
     schedule:
-      interval: 'monthly'
+      interval: monthly
     open-pull-requests-limit: 5
     commit-message:
-      prefix: 'chore'
+      prefix: chore
     ignore:
       # sbt 1.x -> 2.x is a deliberate, manual migration (plugins must be
       # republished for sbt 2, the build definition needs rewriting).
-      - dependency-name: 'org.scala-sbt:sbt'
-        update-types: ['version-update:semver-major']
+      - dependency-name: org.scala-sbt:sbt
+        update-types:
+          - version-update:semver-major
       # The runner stays on the Scala 3.9 LTS line. Leaving it is a track-wide
       # decision, and SCALA_VERSION in the Dockerfile - which Dependabot cannot
       # see - has to move together with scalaVersion in build.sbt.
-      - dependency-name: 'org.scala-lang:scala3-*'
-        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: org.scala-lang:scala3-*
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
     groups:
       # One PR for routine minor/patch bumps; majors still come individually.
       sbt-minor:
         patterns:
-          - '*'
+          - "*"
         update-types:
-          - 'minor'
-          - 'patch'
+          - minor
+          - patch
 
   # Base images of both Dockerfile stages, pinned by tag and digest
-  - package-ecosystem: 'docker'
-    directory: '/'
+  - package-ecosystem: docker
+    directory: /
     schedule:
-      interval: 'monthly'
+      interval: monthly
     commit-message:
-      prefix: 'chore'
+      prefix: chore
 
   # Keep dependencies for GitHub Actions up-to-date
-  - package-ecosystem: 'github-actions'
-    directory: '/'
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: 'monthly'
+      interval: monthly
     commit-message:
-      prefix: 'chore'
+      prefix: chore
