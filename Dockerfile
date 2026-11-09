@@ -2,7 +2,7 @@
 # names a Scala version in its tag and none of them names 3.9.0 yet, but sbt
 # resolves `scalaVersion` from build.sbt either way - the warmed compiler would
 # go unused, and the tag would be one more thing to re-pin at the next bump.
-FROM sbtscala/scala-sbt:eclipse-temurin-25.0.4_7_1.x@sha256:064dec0f2ade632861c31eb1e88e5e0ebd967009ff3c3d22a5b0ebe46bc3bb77 AS builder
+FROM sbtscala/scala-sbt:eclipse-temurin-25.0.4.1_1_2.x@sha256:78d2f6f588422161f6b8fcc975964da29fd8c0878a5bbb2466e6063158c79d8a AS builder
 
 WORKDIR /build
 
