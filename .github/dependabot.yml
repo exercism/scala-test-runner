@@ -42,6 +42,14 @@ updates:
       interval: monthly
     commit-message:
       prefix: chore
+    ignore:
+      # The runner stays on the current JDK LTS line (25). A non-LTS release is
+      # supported for six months only, and moving to the next LTS is a manual
+      # change: the builder stage (sbtscala/scala-sbt) has to move with it.
+      # Patch releases within the line still arrive.
+      - dependency-name: eclipse-temurin
+        update-types:
+          - version-update:semver-major
 
   # Keep dependencies for GitHub Actions up-to-date
   - package-ecosystem: github-actions
