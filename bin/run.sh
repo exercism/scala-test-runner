@@ -27,11 +27,19 @@ output_dir="${3%/}"
 
 test_runner_jar=/opt/test-runner/target/test-runner.jar
 
-# Class data sharing archives, dumped into the image by bin/warmup.sh. They hold
+# Caches of loaded classes, dumped into the image by bin/warmup.sh. They hold
 # the compiler's and the runner's classes ready to be memory-mapped, which is
 # where most of a short run's time used to go. Should either ever go missing or
 # stop matching, the JVM ignores it and the run is merely slow again.
-scalac_archive=/opt/test-runner/cds/scalac.jsa
+#
+# The compiler's cache is an ahead-of-time (AOT) cache. It holds the compiler's
+# classes already linked as well as loaded, which a class data sharing archive
+# can't, so a compile spends less time setting classes up before using them.
+# The runner's JVMs keep their class data sharing archive: an AOT cache made
+# them no faster. Unlike an archive, a missing AOT cache makes the JVM print an
+# error, which would land in build.log. `-Xlog:aot=off` keeps it out, so a
+# missing cache still only costs speed.
+scalac_cache=/opt/test-runner/cds/scalac.aot
 runner_archive=/opt/test-runner/cds/runner.jsa
 
 # ScalaTest's lazy vals were compiled against the old `scala.runtime.LazyVals`
@@ -75,7 +83,13 @@ sed -i 's/pending//g' "${workdir}"/src/test/scala/*
 # writing it out in another shape below. The test run in between is left alone:
 # that is the one JVM here running a student's own code, which may well hold a
 # loop worth optimising.
-scalac -J-XX:SharedArchiveFile="${scalac_archive}" -J-XX:TieredStopAtLevel=1 \
+#
+# `-XX:+UseSerialGC` collects garbage on the compiling thread. The scalac
+# launcher already gives the compiler a fixed 768 MB heap, which a compile of a
+# few small files never fills, so G1's background threads and bookkeeping only
+# take CPU time away from the compile. The cache is dumped with the same
+# collector, as the JVM requires.
+scalac -J-XX:AOTCache="${scalac_cache}" -J-Xlog:aot=off -J-XX:TieredStopAtLevel=1 -J-XX:+UseSerialGC \
     "-J${unsafe_warning_off}" \
     -classpath "${test_runner_jar}" -d "${workdir_target}" \
     "${workdir}"/src/main/scala/* "${workdir}"/src/test/scala/* &> "${build_log_file}"

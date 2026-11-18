@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 # Synopsis:
-# Build the class data sharing archives that bin/run.sh starts its JVMs with.
+# Build the class caches that bin/run.sh starts its JVMs with: an AOT cache for
+# the compiler, and class data sharing archives for the runner.
 # Run once, while the image is being built - not once per solution.
 
 # Most of a run went on loading classes rather than on the student's code. The
@@ -58,8 +59,12 @@ class WarmupTest extends AnyFunSuite with Matchers {
 }
 SCALA
 
-echo "warmup: dumping ${cds_dir}/scalac.jsa"
-scalac -J-XX:ArchiveClassesAtExit="${cds_dir}/scalac.jsa" "-J${unsafe_warning_off}" \
+# The compiler's cache is an AOT cache, dumped under the same JIT and garbage
+# collector options bin/run.sh compiles with, because the JVM only uses a cache
+# made under the same collector.
+echo "warmup: dumping ${cds_dir}/scalac.aot"
+scalac -J-XX:AOTCacheOutput="${cds_dir}/scalac.aot" -J-XX:TieredStopAtLevel=1 -J-XX:+UseSerialGC \
+    "-J${unsafe_warning_off}" \
     -classpath "${test_runner_jar}" -d "${workdir_target}" \
     "${workdir}"/src/main/scala/* "${workdir}"/src/test/scala/*
 
@@ -70,12 +75,14 @@ java -XX:ArchiveClassesAtExit="${cds_dir}/runner.jsa" "${unsafe_warning_off}" \
 
 # An archive the JVM cannot use is ignored rather than reported: the run simply
 # goes back to being slow, which is not the sort of thing anyone notices in a
-# build log. `-Xshare:on` turns that silence into a refusal to start, so a
-# classpath that has drifted out of step with bin/run.sh fails the build here
-# instead of quietly costing every run a second. bin/run.sh itself leaves the
+# build log. `-Xshare:on`, and `-XX:AOTMode=on` for the AOT cache, turn that
+# silence into a refusal to start, so a classpath that has drifted out of step
+# with bin/run.sh fails the build here instead of quietly costing every run a
+# second. bin/run.sh itself leaves the
 # default `-Xshare:auto` in place, where a bad archive only costs speed.
 echo "warmup: verifying the archives are usable"
-scalac -J-Xshare:on -J-XX:SharedArchiveFile="${cds_dir}/scalac.jsa" "-J${unsafe_warning_off}" \
+scalac -J-XX:AOTMode=on -J-XX:AOTCache="${cds_dir}/scalac.aot" -J-XX:TieredStopAtLevel=1 -J-XX:+UseSerialGC \
+    "-J${unsafe_warning_off}" \
     -classpath "${test_runner_jar}" -d "${workdir_target}" \
     "${workdir}"/src/main/scala/* "${workdir}"/src/test/scala/*
 java -Xshare:on -XX:SharedArchiveFile="${cds_dir}/runner.jsa" "${unsafe_warning_off}" \

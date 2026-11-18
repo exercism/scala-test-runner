@@ -35,7 +35,7 @@ ENV PATH="/opt/scala/bin:${PATH}"
 COPY --from=builder /build/target/scala-*/TestRunner-assembly-*.jar ./target/test-runner.jar
 COPY bin/ bin/
 
-# Dump the class data sharing archives bin/run.sh starts its JVMs with. This
+# Dump the class caches bin/run.sh starts its JVMs with (see bin/warmup.sh). This
 # does a throwaway run to collect them, so it has to come last: an archive is
 # tied to the timestamp of every jar it was dumped against, and a later step
 # that rewrote the assembly jar would leave the JVM quietly ignoring the
